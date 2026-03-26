@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>Request Mod</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Request Mod</h1>
+        <form id="requestForm" class="space-y-4">
+            <div>
+                <label class="block mb-1">Nama Kamu</label>
+                <input type="text" id="name" required class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block mb-1">Nama Mod</label>
+                <input type="text" id="modName" required class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block mb-1">Detail Request</label>
+                <textarea id="description" rows="3" required class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded font-semibold transition">Kirim Request</button>
+        </form>
+        <p id="status" class="mt-4 text-center text-sm"></p>
+    </div>
+
+    <script>
+        document.getElementById('requestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('status');
+            status.innerText = "Mengirim...";
+            status.className = "mt-4 text-center text-sm text-yellow-400";
+
+            const data = {
+                name: document.getElementById('name').value,
+                modName: document.getElementById('modName').value,
+                description: document.getElementById('description').value
+            };
+
+            // Mengirim ke backend api/telegram
+            const response = await fetch('/api/telegram', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                status.innerText = "Sukses! Request terkirim ke Telegram.";
+                status.className = "mt-4 text-center text-sm text-green-400";
+                e.target.reset();
+            } else {
+                status.innerText = "Gagal mengirim. Coba lagi.";
+                status.className = "mt-4 text-center text-sm text-red-400";
+            }
+        });
+    </script>
+</body>
+</html>
