@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Request Mod</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>Request Mod</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-950 text-white min-h-screen flex items-center justify-center px-4">
@@ -16,27 +16,37 @@
     <form id="requestForm" class="space-y-4">
 
         <div>
-            <label class="text-sm text-gray-300">Nama Kamu</label>
+            <label class="text-sm">Nama</label>
             <input type="text" id="name" required minlength="2"
-                class="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none">
+                class="w-full mt-1 p-2 rounded bg-gray-800 border border-gray-700">
         </div>
 
         <div>
-            <label class="text-sm text-gray-300">Nama Mod</label>
+            <label class="text-sm">Nama Game</label>
             <input type="text" id="modName" required minlength="2"
-                class="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none">
+                class="w-full mt-1 p-2 rounded bg-gray-800 border border-gray-700">
         </div>
 
         <div>
-            <label class="text-sm text-gray-300">Detail Request</label>
-            <textarea id="description" rows="3" required minlength="5"
-                class="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none"></textarea>
+            <label class="text-sm">Detail Mod</label>
+            <textarea id="description" required minlength="5"
+                class="w-full mt-1 p-2 rounded bg-gray-800 border border-gray-700"></textarea>
         </div>
 
-        <button id="submitBtn" type="submit"
-            class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold transition flex justify-center items-center gap-2">
+        <div>
+            <label class="text-sm">
+                Username Telegram / Nomor WA (Opsional)
+            </label>
+            <input type="text" id="contact"
+                placeholder="@username / 08xxxx"
+                class="w-full mt-1 p-2 rounded bg-gray-800 border border-gray-700">
+        </div>
+
+        <button id="submitBtn"
+            class="w-full bg-blue-600 py-2 rounded flex justify-center items-center gap-2">
             <span id="btnText">Kirim Request</span>
-            <span id="spinner" class="hidden animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+            <span id="spinner"
+                class="hidden animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
         </button>
 
     </form>
@@ -54,19 +64,25 @@ const btnText = document.getElementById('btnText');
 
 let isSubmitting = false;
 
+function isValidContact(input) {
+    if (!input) return true;
+    if (input.startsWith('@') && input.length >= 5) return true;
+    if (/^(08|\+628)\d{7,13}$/.test(input)) return true;
+    return false;
+}
+
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
     if (isSubmitting) return;
 
     const name = document.getElementById('name').value.trim();
     const modName = document.getElementById('modName').value.trim();
     const description = document.getElementById('description').value.trim();
+    const contact = document.getElementById('contact').value.trim();
 
-    // 🔒 Validasi basic
-    if (name.length < 2 || modName.length < 2 || description.length < 5) {
-        status.innerText = "Input tidak valid.";
-        status.className = "mt-4 text-center text-sm text-red-400";
+    if (!isValidContact(contact)) {
+        status.innerText = "Format kontak tidak valid";
+        status.className = "text-red-400 mt-4 text-sm";
         return;
     }
 
@@ -74,28 +90,27 @@ form.addEventListener('submit', async (e) => {
     btn.disabled = true;
     spinner.classList.remove('hidden');
     btnText.innerText = "Mengirim...";
-    status.innerText = "";
 
     try {
-        const response = await fetch('/api/telegram', {
+        const res = await fetch('/api/telegram', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, modName, description })
+            body: JSON.stringify({ name, modName, description, contact })
         });
 
-        const result = await response.json();
+        const result = await res.json();
 
         if (result.success) {
-            status.innerText = "✅ Request berhasil dikirim!";
-            status.className = "mt-4 text-center text-sm text-green-400";
+            status.innerText = "✅ Berhasil dikirim!";
+            status.className = "text-green-400 mt-4 text-sm";
             form.reset();
         } else {
-            throw new Error(result.error || "Gagal mengirim");
+            throw new Error(result.error);
         }
 
     } catch (err) {
         status.innerText = "❌ " + err.message;
-        status.className = "mt-4 text-center text-sm text-red-400";
+        status.className = "text-red-400 mt-4 text-sm";
     }
 
     isSubmitting = false;
@@ -106,4 +121,4 @@ form.addEventListener('submit', async (e) => {
 </script>
 
 </body>
-</html>
+    </html>
