@@ -6,48 +6,60 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Mengambil data dari body request
     const { name, modName, description, contact } = req.body || {};
 
     const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
     const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+    // Validasi Environment Variables
     if (!BOT_TOKEN || !CHAT_ID) {
-      throw new Error("Missing ENV");
+      throw new Error("Konfigurasi server belum lengkap (Missing ENV)");
     }
 
+    // Validasi Input Dasar
     if (!name || !modName || !description) {
-      throw new Error("Invalid input");
+      throw new Error("Nama, Game, dan Detail wajib diisi");
     }
 
     if (description.length > 500) {
-      throw new Error("Terlalu panjang");
+      throw new Error("Detail mod terlalu panjang (maks 500 karakter)");
     }
 
     if (contact && contact.length > 50) {
-      throw new Error("Contact too long");
+      throw new Error("Kontak terlalu panjang");
     }
 
-    // 🔥 Contact parsing
+    // 🔥 Proses Contact (Username / WA)
     let contactText = '-';
 
     if (contact) {
       if (contact.startsWith('@')) {
+        // Kalau username telegram
         contactText = contact;
-      } else if (/^(08|\+628)/.test(contact)) {
-        const wa = contact.replace(/^0/, '62');
-        contactText = `https://wa.me/${wa}`;
+      } else if (/^(08|\+628|628)/.test(contact)) {
+        // Kalau nomor HP (08..., +628..., 628...)
+        // Bersihkan dari karakter non-angka (seperti + atau spasi)
+        let cleanNumber = contact.replace(/\D/g, ''); 
+        // Pastikan diawali 62
+        if (cleanNumber.startsWith('0')) {
+            cleanNumber = '62' + cleanNumber.substring(1);
+        }
+        contactText = `https://wa.me/${cleanNumber}`;
       } else {
+        // Kalau format lain
         contactText = contact;
       }
     }
 
+    // Format Pesan Telegram
     const text = `
 🚀 REQUEST MOD BARU
 ━━━━━━━━━━━━━━━
 👤 User     : ${name}
 🎮 Game     : ${modName}
 📝 Mod Detail :
-${description}
+ ${description}
 
 📞 Contact  : ${contactText}
 📅 Time     : ${new Date().toLocaleDateString('id-ID')}
@@ -55,6 +67,7 @@ ${description}
 ━━━━━━━━━━━━━━━
 `;
 
+    // Kirim ke Telegram
     const tg = await fetch(
       `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
       {
@@ -70,16 +83,17 @@ ${description}
     const data = await tg.json();
 
     if (!data.ok) {
-      throw new Error(data.description);
+      console.error("Telegram Error:", data);
+      throw new Error("Gagal mengirim ke Telegram: " + data.description);
     }
 
     return res.status(200).json({ success: true });
 
   } catch (err) {
-    console.error(err);
+    console.error("Server Error:", err);
     return res.status(500).json({
       success: false,
       error: err.message
     });
   }
-}
+                      }
