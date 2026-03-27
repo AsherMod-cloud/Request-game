@@ -1,61 +1,109 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Request Mod</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-6 text-center">Request Mod</h1>
-        <form id="requestForm" class="space-y-4">
-            <div>
-                <label class="block mb-1">Nama Kamu</label>
-                <input type="text" id="name" required class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500">
-            </div>
-            <div>
-                <label class="block mb-1">Nama Mod</label>
-                <input type="text" id="modName" required class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500">
-            </div>
-            <div>
-                <label class="block mb-1">Detail Request</label>
-                <textarea id="description" rows="3" required class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"></textarea>
-            </div>
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded font-semibold transition">Kirim Request</button>
-        </form>
-        <p id="status" class="mt-4 text-center text-sm"></p>
-    </div>
 
-    <script>
-        document.getElementById('requestForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const status = document.getElementById('status');
-            status.innerText = "Mengirim...";
-            status.className = "mt-4 text-center text-sm text-yellow-400";
+<body class="bg-gray-950 text-white min-h-screen flex items-center justify-center px-4">
 
-            const data = {
-                name: document.getElementById('name').value,
-                modName: document.getElementById('modName').value,
-                description: document.getElementById('description').value
-            };
+<div class="bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-800">
 
-            // Mengirim ke backend api/telegram
-            const response = await fetch('/api/telegram', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+    <h1 class="text-2xl font-bold text-center mb-1">Request Mod</h1>
+    <p class="text-gray-400 text-center text-sm mb-6">Kirim request mod yang kamu inginkan</p>
 
-            const result = await response.json();
+    <form id="requestForm" class="space-y-4">
 
-            if (result.success) {
-                status.innerText = "Sukses! Request terkirim ke Telegram.";
-                status.className = "mt-4 text-center text-sm text-green-400";
-                e.target.reset();
-            } else {
-                status.innerText = "Gagal mengirim. Coba lagi.";
-                status.className = "mt-4 text-center text-sm text-red-400";
-            }
+        <div>
+            <label class="text-sm text-gray-300">Nama Kamu</label>
+            <input type="text" id="name" required minlength="2"
+                class="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none">
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-300">Nama Mod</label>
+            <input type="text" id="modName" required minlength="2"
+                class="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none">
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-300">Detail Request</label>
+            <textarea id="description" rows="3" required minlength="5"
+                class="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none"></textarea>
+        </div>
+
+        <button id="submitBtn" type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold transition flex justify-center items-center gap-2">
+            <span id="btnText">Kirim Request</span>
+            <span id="spinner" class="hidden animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+        </button>
+
+    </form>
+
+    <p id="status" class="mt-4 text-center text-sm"></p>
+
+</div>
+
+<script>
+const form = document.getElementById('requestForm');
+const status = document.getElementById('status');
+const btn = document.getElementById('submitBtn');
+const spinner = document.getElementById('spinner');
+const btnText = document.getElementById('btnText');
+
+let isSubmitting = false;
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+
+    const name = document.getElementById('name').value.trim();
+    const modName = document.getElementById('modName').value.trim();
+    const description = document.getElementById('description').value.trim();
+
+    // 🔒 Validasi basic
+    if (name.length < 2 || modName.length < 2 || description.length < 5) {
+        status.innerText = "Input tidak valid.";
+        status.className = "mt-4 text-center text-sm text-red-400";
+        return;
+    }
+
+    isSubmitting = true;
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+    btnText.innerText = "Mengirim...";
+    status.innerText = "";
+
+    try {
+        const response = await fetch('/api/telegram', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, modName, description })
         });
-    </script>
+
+        const result = await response.json();
+
+        if (result.success) {
+            status.innerText = "✅ Request berhasil dikirim!";
+            status.className = "mt-4 text-center text-sm text-green-400";
+            form.reset();
+        } else {
+            throw new Error(result.error || "Gagal mengirim");
+        }
+
+    } catch (err) {
+        status.innerText = "❌ " + err.message;
+        status.className = "mt-4 text-center text-sm text-red-400";
+    }
+
+    isSubmitting = false;
+    btn.disabled = false;
+    spinner.classList.add('hidden');
+    btnText.innerText = "Kirim Request";
+});
+</script>
+
 </body>
 </html>
