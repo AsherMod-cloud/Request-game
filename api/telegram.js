@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, modName, description } = req.body || {};
+    const { name, modName, description, contact } = req.body || {};
 
     const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
     const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -15,27 +15,59 @@ export default async function handler(req, res) {
       throw new Error("Missing ENV");
     }
 
-    const text = `
-🚀 Request Mod Baru
------------------------
-👤 Nama: ${name}
-📦 Nama Mod: ${modName}
-📝 Deskripsi: ${description}
-    `;
+    if (!name || !modName || !description) {
+      throw new Error("Invalid input");
+    }
 
-    const telegramRes = await fetch(
+    if (description.length > 500) {
+      throw new Error("Terlalu panjang");
+    }
+
+    if (contact && contact.length > 50) {
+      throw new Error("Contact too long");
+    }
+
+    // 🔥 Contact parsing
+    let contactText = '-';
+
+    if (contact) {
+      if (contact.startsWith('@')) {
+        contactText = contact;
+      } else if (/^(08|\+628)/.test(contact)) {
+        const wa = contact.replace(/^0/, '62');
+        contactText = `https://wa.me/${wa}`;
+      } else {
+        contactText = contact;
+      }
+    }
+
+    const text = `
+🚀 REQUEST MOD BARU
+━━━━━━━━━━━━━━━
+👤 User     : ${name}
+🎮 Game     : ${modName}
+📝 Mod Detail :
+${description}
+
+📞 Contact  : ${contactText}
+📅 Time     : ${new Date().toLocaleDateString('id-ID')}
+🌐 Source   : Web Request
+━━━━━━━━━━━━━━━
+`;
+
+    const tg = await fetch(
       `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: CHAT_ID,
-          text: text,
+          text: text
         }),
       }
     );
 
-    const data = await telegramRes.json();
+    const data = await tg.json();
 
     if (!data.ok) {
       throw new Error(data.description);
@@ -43,11 +75,11 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true });
 
-  } catch (error) {
-    console.error("ERROR:", error);
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({
       success: false,
-      error: error.message
+      error: err.message
     });
   }
 }
