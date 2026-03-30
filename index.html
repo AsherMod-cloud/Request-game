@@ -2,71 +2,103 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Request Mod</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Mod | AsherMod</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Animasi agar munculnya halus */
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
+            from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-        .animate-modal { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-pop { animation: fadeIn 0.3s ease-out forwards; }
         
-        /* Menghilangkan scroll saat modal muncul */
-        .modal-open { overflow: hidden; }
+        /* Custom Glow Effect */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(147, 51, 234, 0.3);
+        }
+        .glow-input:focus {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
     </style>
 </head>
 
-<body class="bg-black text-gray-200 min-h-screen flex items-center justify-center p-4">
+<body class="bg-[#050505] text-gray-200 min-h-screen flex items-center justify-center p-4 selection:bg-purple-500/30">
 
-<div class="bg-[#0f111a] p-8 rounded-[2rem] shadow-2xl w-full max-w-md border border-gray-800/50 relative">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+<div class="bg-gray-900/50 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-xl border border-gray-800/50 relative overflow-hidden">
+    <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl"></div>
+    
+    <div class="text-center mb-8 relative">
+        <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 text-transparent bg-clip-text glow-text tracking-tight">
             ✨ Request Mod
         </h1>
-        <p class="text-gray-500 text-[10px] tracking-widest mt-1 uppercase">V1.0 • DEV PORTAL</p>
+        <p class="text-gray-500 mt-2 text-sm font-medium uppercase tracking-widest">v1.0 • Dev Portal</p>
     </div>
 
-    <form id="requestForm" class="space-y-4">
-        <div>
-            <label class="text-[10px] font-bold text-gray-500 ml-1 uppercase">Pengirim</label>
-            <input type="text" id="name" class="w-full p-3 rounded-xl bg-gray-900/50 border border-gray-800 focus:border-blue-500 outline-none transition-all" placeholder="Kosongkan untuk anonim">
-        </div>
-        <div>
-            <label class="text-[10px] font-bold text-gray-500 ml-1 uppercase">Target Game</label>
-            <input type="text" id="modName" required class="w-full p-3 rounded-xl bg-gray-900/50 border border-gray-800 focus:border-blue-500 outline-none transition-all" placeholder="Contoh: Mobile Legends">
-        </div>
-        <div>
-            <label class="text-[10px] font-bold text-gray-500 ml-1 uppercase">Detail Fitur</label>
-            <textarea id="description" required rows="3" class="w-full p-3 rounded-xl bg-gray-900/50 border border-gray-800 focus:border-blue-500 outline-none transition-all resize-none" placeholder="Apa yang ingin di-mod?"></textarea>
-        </div>
-        <div>
-            <label class="text-[10px] font-bold text-gray-500 ml-1 uppercase">Contact Info</label>
-            <input type="text" id="contact" class="w-full p-3 rounded-xl bg-gray-900/50 border border-gray-800 focus:border-blue-500 outline-none transition-all" placeholder="@telegram / WA">
+    <form id="requestForm" class="space-y-5 relative">
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">PENGIRIM</label>
+            <input type="text" id="name"
+                class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input"
+                placeholder="Kosongkan untuk anonim">
         </div>
 
-        <button id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 rounded-2xl font-bold hover:brightness-110 active:scale-95 transition-all mt-2 shadow-lg shadow-blue-900/20">
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">TARGET GAME / APP</label>
+            <input type="text" id="modName" required
+                class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input"
+                placeholder="Contoh: Mobile Legends">
+        </div>
+
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">DETAIL FITUR</label>
+            <textarea id="description" required rows="4"
+                class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input resize-none"
+                placeholder="Sebutkan fitur mod yang diinginkan..."></textarea>
+        </div>
+
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">CONTACT INFO</label>
+            <input type="text" id="contact"
+                class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input"
+                placeholder="@telegram / WhatsApp">
+        </div>
+
+        <button id="submitBtn"
+            class="w-full bg-gradient-to-br from-blue-600 to-purple-700 py-4 rounded-2xl font-bold text-white shadow-lg shadow-blue-900/20 hover:shadow-blue-600/20 hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-3">
             <span id="btnText">Kirim Request</span>
+            <span id="spinner" class="hidden animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full"></span>
         </button>
     </form>
-    <div id="status" class="mt-4 text-center text-sm font-medium"></div>
+
+    <div id="status" class="mt-4 text-center text-sm font-medium min-h-[1.25rem]"></div>
 </div>
 
-<div id="modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm hidden">
-    <div class="bg-[#161b22] border border-gray-800 w-full max-w-[320px] rounded-[2.5rem] p-8 text-center shadow-2xl animate-modal">
-        <div class="text-4xl mb-4">👋</div>
-        <h2 class="text-xl font-bold text-white mb-2">Welcome!</h2>
-        <div class="text-gray-400 text-sm leading-relaxed mb-6">
-            <p>Kirim request dengan jelas ya 🙌</p>
-            <p class="mt-1">🚫 Hindari spam berlebihan</p>
-            <p class="mt-1">📩 Isi kontak jika ingin dihubungi</p>
-        </div>
-        <button id="closeModal" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-blue-900/40">
-            Siap, Paham!
-        </button>
+<div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] text-center max-w-sm w-full shadow-2xl animate-pop relative overflow-hidden">
+    <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
+        <span class="text-3xl">👋</span>
     </div>
+    
+    <h2 class="text-2xl font-bold text-white mb-2">Halo, Modder!</h2>
+    <div class="space-y-3 mb-8 text-gray-400 text-sm leading-relaxed">
+      <p>Selamat datang di form request. Mohon perhatikan poin berikut:</p>
+      <ul class="text-left space-y-2 inline-block mx-auto">
+        <li class="flex items-center gap-2"><span class="text-blue-400">✓</span> Deskripsi harus jelas</li>
+        <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>
+        <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>
+      </ul>
+    </div>
+
+    <button id="closeModal" class="w-full bg-gray-100 text-gray-950 py-3.5 rounded-xl font-bold hover:bg-white transition-colors active:scale-95">
+      Saya Mengerti
+    </button>
+    
+    <p class="mt-4 text-[10px] text-gray-600 uppercase tracking-tighter italic">Credit: Modded by AsherMod</p>
+  </div>
 </div>
+
+<audio id="clickSound" src="https://files.catbox.moe/3xte9v.mp3"></audio>
+<audio id="successSound" src="https://files.catbox.moe/6f3x9k.mp3"></audio>
 
 <script>
 const form = document.getElementById('requestForm');
