@@ -89,6 +89,11 @@
       </ul>
     </div>
 
+    <div class="flex items-center gap-2 mt-4 justify-center text-sm text-gray-400">
+  <input type="checkbox" id="dontShow" class="accent-blue-500">
+  <label for="dontShow">Jangan tampilkan lagi</label>
+</div>
+
     <button id="closeModal" class="w-full bg-gray-100 text-gray-950 py-3.5 rounded-xl font-bold hover:bg-white transition-colors active:scale-95">
       Saya Mengerti
     </button>
@@ -145,13 +150,62 @@ document.addEventListener("visibilitychange", () => {
 ========================= */
 function isValidContact(input) {
     if (!input) return true;
-    if (input.startsWith('@')) return true;
+<script>
+const form = document.getElementById('requestForm');
+const status = document.getElementById('status');
+const btn = document.getElementById('submitBtn');
+const spinner = document.getElementById('spinner');
+const btnText = document.getElementById('btnText');
+const modal = document.getElementById('modal');
+const closeModal = document.getElementById('closeModal');
+const clickSound = document.getElementById('clickSound');
+const successSound = document.getElementById('successSound');
+
+let isSubmitting = false;
+
+/* =========================
+   WELCOME MODAL (VERSIONED)
+========================= */
+const WELCOME_VERSION = "v1";
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("welcomeShown") !== WELCOME_VERSION) {
+        setTimeout(() => modal.classList.remove('hidden'), 300);
+    }
+});
+
+closeModal.onclick = () => {
+    modal.classList.add('hidden');
+    localStorage.setItem("welcomeShown", WELCOME_VERSION);
+
+    clickSound.currentTime = 0;
+    clickSound.play().catch(()=>{});
+};
+
+/* =========================
+   STOP SOUND (ANTI BACKGROUND)
+========================= */
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+        clickSound.pause();
+        successSound.pause();
+        clickSound.currentTime = 0;
+        successSound.currentTime = 0;
+    }
+});
+
+/* =========================
+   VALIDASI CONTACT
+========================= */
+function isValidContact(input) {
+    if (!input) return true;
+    if (input.startsWith('@') && input.length >= 5) return true;
     if (/^(08|\+628)\d{7,13}$/.test(input)) return true;
     return false;
 }
 
 /* =========================
-   SUBMIT
+   SUBMIT FORM
 ========================= */
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -171,7 +225,7 @@ form.addEventListener('submit', async (e) => {
 
     isSubmitting = true;
     btn.disabled = true;
-    btn.classList.add('opacity-70');
+    btn.classList.add('opacity-70', 'pointer-events-none');
     spinner.classList.remove('hidden');
     btnText.innerText = "Mengirim...";
 
@@ -184,13 +238,20 @@ form.addEventListener('submit', async (e) => {
             body: JSON.stringify({ name, modName, description, contact })
         });
 
-        const result = await res.json();
+        let result;
+        try {
+            result = await res.json();
+        } catch {
+            throw new Error("Response server tidak valid");
+        }
 
         if (!res.ok || !result.success) {
             throw new Error(result.error || "Server error");
         }
 
+        successSound.currentTime = 0;
         successSound.play().catch(()=>{});
+
         status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";
         form.reset();
 
@@ -199,7 +260,7 @@ form.addEventListener('submit', async (e) => {
     } finally {
         isSubmitting = false;
         btn.disabled = false;
-        btn.classList.remove('opacity-70');
+        btn.classList.remove('opacity-70', 'pointer-events-none');
         spinner.classList.add('hidden');
         btnText.innerText = "Kirim Request";
     }
