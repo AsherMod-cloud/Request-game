@@ -2,21 +2,19 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<!-- Tag Penting supaya ukuran responsive -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Request Mod</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<!-- Background gelap dengan ukuran full screen -->
-<body class="bg-gray-950 text-white min-h-screen flex items-center justify-center p-4 sm:p-6">
+<body class="bg-gray-950 text-white min-h-screen flex items-center justify-center p-4">
 
-<!-- Card utama dibuat lebih lebar (max-w-xl) dan padding lebih tebal -->
-<div class="bg-gray-900 p-8 sm:p-10 rounded-2xl shadow-2xl w-full max-w-xl border border-gray-800">
+<!-- CARD -->
+<div class="bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-xl border border-gray-800">
 
     <div class="text-center mb-8">
-        <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
-            ✨ Request Mod 💻
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+            ✨ Request Mod
         </h1>
         <p class="text-gray-400 mt-2">Kirim request mod yang kamu inginkan</p>
     </div>
@@ -25,49 +23,62 @@
 
         <!-- Nama -->
         <div>
-            <label class="block text-base font-medium text-gray-300 mb-2">Namamu</label>
-            <input type="text" id="name" required minlength="2"
-                class="w-full p-4 text-lg rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
-                placeholder="Masukkan namamu">
+            <label class="text-gray-300">Namamu (Opsional)</label>
+            <input type="text" id="name"
+                class="w-full p-3 mt-1 rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none"
+                placeholder="Kosongkan jika ingin anonim">
         </div>
 
-        <!-- Nama Game -->
+        <!-- Game -->
         <div>
-            <label class="block text-base font-medium text-gray-300 mb-2">Nama Game</label>
-            <input type="text" id="modName" required minlength="2"
-                class="w-full p-4 text-lg rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
-                placeholder="Contoh: Subway Surfers, Frag Pro Shooter">
+            <label class="text-gray-300">Nama Game</label>
+            <input type="text" id="modName" required
+                class="w-full p-3 mt-1 rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none">
         </div>
 
-        <!-- Detail Mod -->
+        <!-- Detail -->
         <div>
-            <label class="block text-base font-medium text-gray-300 mb-2">Detail Mod</label>
-            <textarea id="description" required minlength="5" rows="4"
-                class="w-full p-4 text-lg rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition resize-none"
-                placeholder="Jelaskan fitur yang diinginkan (e.g. Unlock Skin, No Ads)"></textarea>
+            <label class="text-gray-300">Detail Mod</label>
+            <textarea id="description" required rows="4"
+                class="w-full p-3 mt-1 rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none"></textarea>
         </div>
 
         <!-- Contact -->
         <div>
-            <label class="block text-base font-medium text-gray-300 mb-2">Contact (Opsional)</label>
+            <label class="text-gray-300">Contact (Opsional)</label>
             <input type="text" id="contact"
-                class="w-full p-4 text-lg rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
-                placeholder="Username Telegram / Nomor WA">
+                class="w-full p-3 mt-1 rounded-xl bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none"
+                placeholder="@telegram / 08xxx">
         </div>
 
-        <!-- Tombol -->
-        <button id="submitBtn" type="submit"
-            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg font-bold py-4 rounded-xl flex justify-center items-center gap-3 transition transform hover:scale-[1.01] active:scale-[0.99] shadow-lg">
+        <!-- Button -->
+        <button id="submitBtn"
+            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:scale-105 active:scale-95 transition">
             <span id="btnText">Kirim Request</span>
             <span id="spinner" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
         </button>
 
     </form>
 
-    <!-- Status -->
-    <div id="status" class="mt-6 text-center text-lg font-medium h-6"></div>
-
+    <div id="status" class="mt-4 text-center"></div>
 </div>
+
+<!-- WELCOME MODAL -->
+<div id="modal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden">
+  <div class="bg-gray-900 p-6 rounded-xl text-center border border-gray-700 max-w-sm">
+    <h2 class="text-xl font-bold mb-3">👋 Welcome</h2>
+    <p class="text-gray-300 text-sm mb-4">
+      Kirim request dengan jelas ya 🙌<br>
+      🚫 Hindari spam<br>
+      📩 Isi contact jika ingin dihubungi
+    </p>
+    <button id="closeModal" class="bg-blue-600 px-4 py-2 rounded-lg">OK</button>
+  </div>
+</div>
+
+<!-- SOUND (EVENT ONLY) -->
+<audio id="clickSound" src="https://files.catbox.moe/3xte9v.mp3"></audio>
+<audio id="successSound" src="https://files.catbox.moe/6f3x9k.mp3"></audio>
 
 <script>
 const form = document.getElementById('requestForm');
@@ -76,39 +87,74 @@ const btn = document.getElementById('submitBtn');
 const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
 
+const clickSound = document.getElementById('clickSound');
+const successSound = document.getElementById('successSound');
+
 let isSubmitting = false;
 
-// Validasi contact (Username WA / Tele)
+/* =========================
+   WELCOME MODAL
+========================= */
+const modal = document.getElementById('modal');
+const closeModal = document.getElementById('closeModal');
+
+if (!localStorage.getItem("welcomeShown")) {
+    modal.classList.remove('hidden');
+}
+
+closeModal.onclick = () => {
+    modal.classList.add('hidden');
+    localStorage.setItem("welcomeShown", "true");
+    clickSound.play().catch(()=>{});
+};
+
+/* =========================
+   STOP SOUND IF TAB HIDDEN
+========================= */
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+        clickSound.pause();
+        successSound.pause();
+    }
+});
+
+/* =========================
+   VALIDASI CONTACT
+========================= */
 function isValidContact(input) {
     if (!input) return true;
-    if (input.startsWith('@') && input.length >= 5) return true;
+    if (input.startsWith('@')) return true;
     if (/^(08|\+628)\d{7,13}$/.test(input)) return true;
     return false;
 }
 
+/* =========================
+   SUBMIT
+========================= */
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    const name = document.getElementById('name').value.trim();
+    let name = document.getElementById('name').value.trim();
     const modName = document.getElementById('modName').value.trim();
     const description = document.getElementById('description').value.trim();
     const contact = document.getElementById('contact').value.trim();
 
+    if (!name) name = "Anonymous";
+
     if (!isValidContact(contact)) {
-        status.innerText = "❌ Format kontak tidak valid!";
-        status.className = "mt-6 text-center text-lg font-medium text-red-400";
+        status.innerText = "❌ Format kontak tidak valid";
         return;
     }
 
-    // Set loading state
     isSubmitting = true;
     btn.disabled = true;
-    btn.classList.add('opacity-80');
     spinner.classList.remove('hidden');
     btnText.innerText = "Mengirim...";
 
     try {
+        status.innerText = "⏳ Mengirim...";
+        
         const res = await fetch('/api/telegram', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -118,22 +164,19 @@ form.addEventListener('submit', async (e) => {
         const result = await res.json();
 
         if (result.success) {
+            successSound.play().catch(()=>{});
             status.innerText = "✅ Berhasil terkirim!";
-            status.className = "mt-6 text-center text-lg font-medium text-green-400";
             form.reset();
         } else {
-            throw new Error(result.error || "Server Error");
+            throw new Error(result.error);
         }
 
     } catch (err) {
-        status.innerText = "❌ Gagal: " + err.message;
-        status.className = "mt-6 text-center text-lg font-medium text-red-400";
+        status.innerText = "❌ " + err.message;
     }
 
-    // Reset button
     isSubmitting = false;
     btn.disabled = false;
-    btn.classList.remove('opacity-80');
     spinner.classList.add('hidden');
     btnText.innerText = "Kirim Request";
 });
