@@ -129,16 +129,16 @@ const errorSound = document.getElementById('errorSound');
 const soundToggle = document.getElementById('soundToggle');
 
 let isSubmitting = false;
+let cooldown = 0;
 
 /* =========================
-   COOLDOWN
+   COOLDOWN SYSTEM
 ========================= */
-
-let cooldown = 0;
 
 function startCooldown() {
     cooldown = 30;
     btn.disabled = true;
+    btn.classList.add('opacity-70');
 
     const interval = setInterval(() => {
         cooldown--;
@@ -147,6 +147,7 @@ function startCooldown() {
         if (cooldown <= 0) {
             clearInterval(interval);
             btn.disabled = false;
+            btn.classList.remove('opacity-70');
             btnText.innerText = "Kirim Request";
         }
     }, 1000);
@@ -211,7 +212,7 @@ closeModal.onclick = () => {
 };
 
 /* =========================
-   STOP SOUND
+   STOP SOUND (TAB SWITCH FIX)
 ========================= */
 
 document.addEventListener("visibilitychange", () => {
@@ -245,12 +246,12 @@ document.addEventListener("click", (e) => {
 });
 
 /* =========================
-   SUBMIT
+   SUBMIT FORM
 ========================= */
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || cooldown > 0) return;
 
     let name = document.getElementById('name').value.trim();
     const modName = document.getElementById('modName').value.trim();
@@ -297,7 +298,7 @@ form.addEventListener('submit', async (e) => {
         status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";
         form.reset();
 
-        // ✅ aktifkan cooldown setelah sukses
+        // 🔒 mulai cooldown
         startCooldown();
 
     } catch (err) {
@@ -306,11 +307,13 @@ form.addEventListener('submit', async (e) => {
     } finally {
         isSubmitting = false;
 
-        // ⚠️ jangan enable tombol kalau masih cooldown
+        // ✅ spinner SELALU dimatikan
+        spinner.classList.add('hidden');
+
+        // ⚠️ tombol hanya aktif kalau gak cooldown
         if (cooldown <= 0) {
             btn.disabled = false;
             btn.classList.remove('opacity-70');
-            spinner.classList.add('hidden');
             btnText.innerText = "Kirim Request";
         }
     }
