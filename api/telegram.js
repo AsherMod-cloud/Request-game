@@ -97,17 +97,33 @@ export default async function handler(req, res) {
       }
     }
 
-    const text = `
-🚀 REQUEST MOD BARU
-━━━━━━━━━━━━━━━
-👤 User     : ${name}
-🎮 Game     : ${modName}
-📝 Mod Detail:
-${description}
+    // 📅 Format tanggal (tanpa jam)
+const date = new Date().toLocaleDateString('id-ID', {
+  timeZone: 'Asia/Jakarta'
+});
 
-📞 Contact  : ${contactText}
-📅 Time     : ${new Date().toLocaleString('id-ID')}
-🌐 Source   : Web Request
+// 📞 fallback contact
+const finalContact = contactText === '-' ? 'Not Provided' : contactText;
+
+// 📑 auto bullet description
+const formattedDesc = description
+  .split('\n')
+  .map(line => `- ${line}`)
+  .join('\n');
+
+const text = `
+🛠 NEW MOD REQUEST
+━━━━━━━━━━━━━━━
+👤 Sender      : ${name}
+🎮 Target      : ${modName}
+
+📑 Description :
+${formattedDesc}
+
+━━━━━━━━━━━━━━━
+📞 Contact     : ${finalContact}
+📅 Date        : ${date}
+🌐 Source      : AsherMod Portal v1.0
 ━━━━━━━━━━━━━━━
 `;
 
