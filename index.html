@@ -70,6 +70,7 @@
         <div id="status" class="mt-4 text-center text-sm font-medium min-h-[1.25rem]"></div>
     </div>
 
+    <!-- MODAL DIALOG -->
     <div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
         <div class="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] text-center max-w-sm w-full shadow-2xl animate-pop relative overflow-hidden">
             <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
@@ -85,10 +86,11 @@
                 </ul>
             </div>
 
-            <div class="flex items-center justify-center gap-3 mb-6 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group" onclick="document.getElementById('dontShow').click()">
-                <input type="checkbox" id="dontShow" class="custom-checkbox" onclick="event.stopPropagation()">
-                <label for="dontShow" class="text-sm text-gray-400 cursor-pointer group-hover:text-gray-300 transition-colors">Jangan tampilkan lagi</label>
-            </div>
+            <!-- Perbaikan: Label membungkus input agar mudah diklik -->
+            <label for="dontShow" class="flex items-center justify-center gap-3 mb-6 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group select-none">
+                <input type="checkbox" id="dontShow" class="custom-checkbox">
+                <span class="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Jangan tampilkan lagi</span>
+            </label>
 
             <button id="closeModal" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-900/20">
                 Saya Mengerti
@@ -98,8 +100,15 @@
         </div>
     </div>
 
-    <audio id="clickSound" src="https://files.catbox.moe/3xte9v.mp3"></audio>
-    <audio id="successSound" src="https://files.catbox.moe/6f3x9k.mp3"></audio>
+    <!-- AUDIO SYSTEM -->
+    <audio id="clickSound" src="sounds/mouse-click.mp3" preload="auto"></audio>
+    <audio id="successSound" src="sounds/Successfully.m4a" preload="auto"></audio>
+    <audio id="errorSound" src="sounds/error-beep.mp3" preload="auto"></audio>
+
+    <!-- SOUND TOGGLE -->
+    <button id="soundToggle" class="fixed bottom-4 right-4 bg-gray-800 border border-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-700 transition z-40">
+        🔊 Sound: ON
+    </button>
 
     <script>
         const form = document.getElementById('requestForm');
@@ -107,69 +116,130 @@
         const btn = document.getElementById('submitBtn');
         const spinner = document.getElementById('spinner');
         const btnText = document.getElementById('btnText');
+
         const modal = document.getElementById('modal');
         const closeModal = document.getElementById('closeModal');
         const dontShowCheckbox = document.getElementById('dontShow');
+
         const clickSound = document.getElementById('clickSound');
         const successSound = document.getElementById('successSound');
+        const errorSound = document.getElementById('errorSound');
+        const soundToggle = document.getElementById('soundToggle');
 
         let isSubmitting = false;
 
         /* =========================
-           WELCOME MODAL LOGIC (FIXED)
+           SOUND SYSTEM
         ========================= */
-        document.addEventListener("DOMContentLoaded", () => {
-            const isHiddenPermanently = localStorage.getItem("hideWelcomeModal");
-            if (!isHiddenPermanently) {
-                setTimeout(() => modal.classList.remove('hidden'), 500);
+        let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
+
+        function updateSoundUI() {
+            soundToggle.innerText = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+        }
+        updateSoundUI();
+
+        soundToggle.onclick = () => {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem("soundEnabled", soundEnabled);
+            updateSoundUI();
+            playSound(clickSound); // Play click saat toggle
+        };
+
+        function playSound(audio) {
+            if (!soundEnabled) return;
+            // Cek apakah file ada/src valid sebelum play untuk hindari error di console
+            if (audio.src) {
+                audio.currentTime = 0;
+                audio.play().catch(() => {}); 
+            }
+        }
+
+        /* =========================
+           WELCOME MODAL LOGIC
+        ========================= */
+
+        window.addEventListener("load", () => {
+            // Cek apakah user sebelumnya memilih "Jangan tampilkan lagi"
+            // Kunci localStorage: 'ashermod_hide_welcome'
+            if (localStorage.getItem("ashermod_hide_welcome") !== "true") {
+                setTimeout(() => modal.classList.remove('hidden'), 300);
             }
         });
 
         closeModal.onclick = () => {
-            // Jika checkbox dicentang, simpan status permanen di localStorage
-            if (dontShowCheckbox.checked) {
-                localStorage.setItem("hideWelcomeModal", "true");
-            }
+            playSound(clickSound);
             
+            // Cek apakah checkbox dicentang saat tombol diklik
+            if (dontShowCheckbox.checked) {
+                localStorage.setItem("ashermod_hide_welcome", "true");
+            } else {
+                // Jika tidak dicentang, hapus storage (atau jangan lakukan apa2)
+                // Ini memastikan dialog akan muncul lagi nanti
+                localStorage.removeItem("ashermod_hide_welcome");
+            }
+
             modal.classList.add('hidden');
-            clickSound.currentTime = 0;
-            clickSound.play().catch(() => {});
         };
+
+        /* =========================
+           STOP SOUND ON TAB CHANGE
+        ========================= */
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                [clickSound, successSound, errorSound].forEach(a => {
+                    a.pause();
+                    a.currentTime = 0;
+                });
+            }
+        });
 
         /* =========================
            VALIDASI CONTACT
         ========================= */
         function isValidContact(input) {
             if (!input) return true;
-            if (input.startsWith('@') && input.length >= 4) return true;
+            if (input.startsWith('@') && input.length >= 5) return true;
             if (/^(08|\+628)\d{7,13}$/.test(input)) return true;
             return false;
         }
 
         /* =========================
-           SUBMIT FORM (API TELEGRAM)
+           GLOBAL CLICK SOUND
+        ========================= */
+        document.addEventListener("click", (e) => {
+            if (e.target.closest("button") && e.target.id !== 'soundToggle') {
+                playSound(clickSound);
+            }
+        });
+
+        /* =========================
+           SUBMIT FORM
         ========================= */
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (isSubmitting) return;
 
-            const name = document.getElementById('name').value.trim() || "Anonymous";
+            let name = document.getElementById('name').value.trim();
             const modName = document.getElementById('modName').value.trim();
             const description = document.getElementById('description').value.trim();
             const contact = document.getElementById('contact').value.trim();
 
+            if (!name) name = "Anonymous";
+
             if (!isValidContact(contact)) {
-                status.innerHTML = "<span class='text-red-400 font-bold animate-shake'>❌ Format kontak tidak valid!</span>";
+                status.innerHTML = "<span class='text-red-400'>❌ Format kontak tidak valid</span>";
+                playSound(errorSound);
                 return;
             }
 
             isSubmitting = true;
             btn.disabled = true;
+            btn.classList.add('opacity-70');
             spinner.classList.remove('hidden');
-            btnText.innerText = "Sedang Mengirim...";
+            btnText.innerText = "Mengirim...";
 
             try {
-                status.innerHTML = "<span class='text-blue-400 animate-pulse'>⏳ Menghubungkan ke server...</span>";
+                status.innerHTML = "<span class='text-blue-400 animate-pulse'>⏳ Mengirim request...</span>";
 
                 const res = await fetch('/api/telegram', {
                     method: 'POST',
@@ -179,13 +249,28 @@
 
                 const result = await res.json();
 
-                if (res.ok && result.success) {
-                    successSound.currentTime = 0;
-                    successSound.play().catch(() => {});
-                    status.innerHTML = "<span class='text-green-400 font-bold'>✅ Request Berhasil Dikirim!</span>";
-                    form.reset();
-                } else {
-                    throw new Error(result.error || "Gagal mengirim data");
+                if (!res.ok || !result.success) {
+                    throw new Error(result.error || "Server error");
+                }
+
+                playSound(successSound);
+                status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";
+                form.reset();
+
+            } catch (err) {
+                playSound(errorSound);
+                status.innerHTML = `<span class='text-red-400'>❌ ${err.message}</span>`;
+            } finally {
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.classList.remove('opacity-70');
+                spinner.classList.add('hidden');
+                btnText.innerText = "Kirim Request";
+            }
+        });
+    </script>
+</body>
+                    </html>             throw new Error(result.error || "Gagal mengirim data");
                 }
             } catch (err) {
                 status.innerHTML = `<span class='text-red-400 italic'>❌ Error: ${err.message}</span>`;
