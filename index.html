@@ -102,9 +102,7 @@
 class="fixed bottom-4 right-4 bg-gray-800 border border-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-700 transition">
 🔊 Sound: ON
 </button>
-
 <script>
-
 const form = document.getElementById('requestForm');
 const status = document.getElementById('status');
 const btn = document.getElementById('submitBtn');
@@ -113,6 +111,7 @@ const btnText = document.getElementById('btnText');
 
 const modal = document.getElementById('modal');
 const closeModal = document.getElementById('closeModal');
+const dontShow = document.getElementById('dontShow');
 
 const clickSound = document.getElementById('clickSound');
 const successSound = document.getElementById('successSound');
@@ -123,143 +122,146 @@ const soundToggle = document.getElementById('soundToggle');
 let isSubmitting = false;
 
 /* =========================
-SOUND SYSTEM
+   SOUND SYSTEM
 ========================= */
 
-// Load state dari localStorage
 let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
 
 function updateSoundUI() {
-soundToggle.innerText = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+    soundToggle.innerText = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
 }
-
 updateSoundUI();
 
-// Toggle sound
 soundToggle.onclick = () => {
-soundEnabled = !soundEnabled;
-localStorage.setItem("soundEnabled", soundEnabled);
-updateSoundUI();
+    soundEnabled = !soundEnabled;
+    localStorage.setItem("soundEnabled", soundEnabled);
+    updateSoundUI();
 };
 
-// Play helper
 function playSound(audio) {
-if (!soundEnabled) return;
-audio.currentTime = 0;
-audio.play().catch(() => {});
+    if (!soundEnabled) return;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
 }
 
 /* =========================
-WELCOME MODAL
+   WELCOME MODAL (FIXED)
 ========================= */
 
 window.addEventListener("load", () => {
-if (!localStorage.getItem("welcomeShown")) {
-setTimeout(() => modal.classList.remove('hidden'), 300);
-}
+    const hide = localStorage.getItem("hideWelcome");
+
+    if (hide !== "true") {
+        setTimeout(() => {
+            modal.classList.remove('hidden');
+        }, 300);
+    }
 });
 
 closeModal.onclick = () => {
-modal.classList.add('hidden');
-localStorage.setItem("welcomeShown", "true");
-playSound(clickSound);
+    modal.classList.add('hidden');
+
+    // ✅ hanya simpan kalau checkbox dicentang
+    if (dontShow.checked) {
+        localStorage.setItem("hideWelcome", "true");
+    }
+
+    playSound(clickSound);
 };
 
 /* =========================
-STOP SOUND (BACKGROUND FIX)
+   STOP SOUND (BACKGROUND FIX)
 ========================= */
 
 document.addEventListener("visibilitychange", () => {
-if (document.hidden) {
-[clickSound, successSound, errorSound].forEach(a => {
-a.pause();
-a.currentTime = 0;
-});
-}
+    if (document.hidden) {
+        [clickSound, successSound, errorSound].forEach(a => {
+            a.pause();
+            a.currentTime = 0;
+        });
+    }
 });
 
 /* =========================
-VALIDASI CONTACT
+   VALIDASI CONTACT
 ========================= */
 
 function isValidContact(input) {
-if (!input) return true;
-if (input.startsWith('@') && input.length >= 5) return true;
-if (/^(08|+628)\d{7,13}$/.test(input)) return true;
-return false;
+    if (!input) return true;
+    if (input.startsWith('@') && input.length >= 5) return true;
+    if (/^(08|\+628)\d{7,13}$/.test(input)) return true;
+    return false;
 }
 
 /* =========================
-GLOBAL CLICK SOUND
+   GLOBAL CLICK SOUND
 ========================= */
 
 document.addEventListener("click", (e) => {
-if (e.target.closest("button")) {
-playSound(clickSound);
-}
+    if (e.target.closest("button")) {
+        playSound(clickSound);
+    }
 });
 
 /* =========================
-SUBMIT FORM
+   SUBMIT FORM
 ========================= */
 
 form.addEventListener('submit', async (e) => {
-e.preventDefault();
-if (isSubmitting) return;
+    e.preventDefault();
+    if (isSubmitting) return;
 
-let name = document.getElementById('name').value.trim();  
-const modName = document.getElementById('modName').value.trim();  
-const description = document.getElementById('description').value.trim();  
-const contact = document.getElementById('contact').value.trim();  
+    let name = document.getElementById('name').value.trim();
+    const modName = document.getElementById('modName').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const contact = document.getElementById('contact').value.trim();
 
-if (!name) name = "Anonymous";  
+    if (!name) name = "Anonymous";
 
-if (!isValidContact(contact)) {  
-    status.innerHTML = "<span class='text-red-400'>❌ Format kontak tidak valid</span>";  
-    playSound(errorSound);  
-    return;  
-}  
+    if (!isValidContact(contact)) {
+        status.innerHTML = "<span class='text-red-400'>❌ Format kontak tidak valid</span>";
+        playSound(errorSound);
+        return;
+    }
 
-isSubmitting = true;  
-btn.disabled = true;  
-btn.classList.add('opacity-70');  
-spinner.classList.remove('hidden');  
-btnText.innerText = "Mengirim...";  
+    isSubmitting = true;
+    btn.disabled = true;
+    btn.classList.add('opacity-70');
+    spinner.classList.remove('hidden');
+    btnText.innerText = "Mengirim...";
 
-try {  
-    status.innerHTML = "<span class='text-blue-400 animate-pulse'>⏳ Mengirim request...</span>";  
+    try {
+        status.innerHTML = "<span class='text-blue-400 animate-pulse'>⏳ Mengirim request...</span>";
 
-    const res = await fetch('/api/telegram', {  
-        method: 'POST',  
-        headers: { 'Content-Type': 'application/json' },  
-        body: JSON.stringify({ name, modName, description, contact })  
-    });  
+        const res = await fetch('/api/telegram', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, modName, description, contact })
+        });
 
-    const result = await res.json();  
+        const result = await res.json();
 
-    if (!res.ok || !result.success) {  
-        throw new Error(result.error || "Server error");  
-    }  
+        if (!res.ok || !result.success) {
+            throw new Error(result.error || "Server error");
+        }
 
-    // Delay dikit biar smooth  
-    setTimeout(() => {  
-        playSound(successSound);  
-    }, 150);  
+        setTimeout(() => {
+            playSound(successSound);
+        }, 150);
 
-    status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";  
-    form.reset();  
+        status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";
+        form.reset();
 
-} catch (err) {  
-    status.innerHTML = `<span class='text-red-400'>❌ ${err.message}</span>`;  
-    playSound(errorSound);  
-} finally {  
-    isSubmitting = false;  
-    btn.disabled = false;  
-    btn.classList.remove('opacity-70');  
-    spinner.classList.add('hidden');  
-    btnText.innerText = "Kirim Request";  
-}
-
+    } catch (err) {
+        status.innerHTML = `<span class='text-red-400'>❌ ${err.message}</span>`;
+        playSound(errorSound);
+    } finally {
+        isSubmitting = false;
+        btn.disabled = false;
+        btn.classList.remove('opacity-70');
+        spinner.classList.add('hidden');
+        btnText.innerText = "Kirim Request";
+    }
 });
 </script>
 
