@@ -129,29 +129,60 @@ const errorSound = document.getElementById('errorSound');
 const soundToggle = document.getElementById('soundToggle');
 
 let isSubmitting = false;
-let cooldown = 0;
 
 /* =========================
-   COOLDOWN SYSTEM
+   COOLDOWN SYSTEM (PERSIST)
 ========================= */
 
+const COOLDOWN_TIME = 30; // detik
+
+function getRemainingCooldown() {
+    const last = localStorage.getItem("lastSubmit");
+    if (!last) return 0;
+
+    const diff = Math.floor((Date.now() - Number(last)) / 1000);
+    return diff < COOLDOWN_TIME ? COOLDOWN_TIME - diff : 0;
+}
+
 function startCooldown() {
-    cooldown = 30;
+    localStorage.setItem("lastSubmit", Date.now());
+
+    let remaining = COOLDOWN_TIME;
     btn.disabled = true;
-    btn.classList.add('opacity-70');
+    spinner.classList.add('hidden');
 
     const interval = setInterval(() => {
-        cooldown--;
-        btnText.innerText = `Tunggu ${cooldown}s`;
+        remaining--;
+        btnText.innerText = `Tunggu ${remaining}s`;
 
-        if (cooldown <= 0) {
+        if (remaining <= 0) {
             clearInterval(interval);
             btn.disabled = false;
-            btn.classList.remove('opacity-70');
             btnText.innerText = "Kirim Request";
         }
     }, 1000);
 }
+
+// Restore cooldown saat reload
+window.addEventListener("load", () => {
+    const remaining = getRemainingCooldown();
+
+    if (remaining > 0) {
+        let timeLeft = remaining;
+        btn.disabled = true;
+
+        const interval = setInterval(() => {
+            timeLeft--;
+            btnText.innerText = `Tunggu ${timeLeft}s`;
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                btn.disabled = false;
+                btnText.innerText = "Kirim Request";
+            }
+        }, 1000);
+    }
+});
 
 /* =========================
    FINGERPRINT
@@ -212,7 +243,7 @@ closeModal.onclick = () => {
 };
 
 /* =========================
-   STOP SOUND (TAB SWITCH FIX)
+   STOP SOUND (BACKGROUND FIX)
 ========================= */
 
 document.addEventListener("visibilitychange", () => {
@@ -251,7 +282,14 @@ document.addEventListener("click", (e) => {
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (isSubmitting || cooldown > 0) return;
+    if (isSubmitting) return;
+
+    // 🚫 BLOCK kalau masih cooldown
+    if (getRemainingCooldown() > 0) {
+        status.innerHTML = "<span class='text-yellow-400'>⏳ Tunggu cooldown selesai</span>";
+        playSound(errorSound);
+        return;
+    }
 
     let name = document.getElementById('name').value.trim();
     const modName = document.getElementById('modName').value.trim();
@@ -298,24 +336,20 @@ form.addEventListener('submit', async (e) => {
         status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";
         form.reset();
 
-        // 🔒 mulai cooldown
+        // 🔥 START COOLDOWN
         startCooldown();
 
     } catch (err) {
         status.innerHTML = `<span class='text-red-400'>❌ ${err.message}</span>`;
         playSound(errorSound);
+
+        // ⚠️ reset button kalau gagal
+        btn.disabled = false;
+        btn.classList.remove('opacity-70');
+        spinner.classList.add('hidden');
+        btnText.innerText = "Kirim Request";
     } finally {
         isSubmitting = false;
-
-        // ✅ spinner SELALU dimatikan
-        spinner.classList.add('hidden');
-
-        // ⚠️ tombol hanya aktif kalau gak cooldown
-        if (cooldown <= 0) {
-            btn.disabled = false;
-            btn.classList.remove('opacity-70');
-            btnText.innerText = "Kirim Request";
-        }
     }
 });
 </script>
