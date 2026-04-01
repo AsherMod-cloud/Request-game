@@ -77,6 +77,13 @@ export default async function handler(req, res) {
     name = sanitize(name);
     modName = sanitize(modName);
     description = sanitize(description);
+    const formattedDesc = description
+  .split('\n')
+  .flatMap(line => line.split(',')) // pecah koma
+  .map(item => item.trim())
+  .filter(Boolean)
+  .map(item => `- ${item.charAt(0).toUpperCase() + item.slice(1)}`)
+  .join('\n');
     contact = sanitize(contact);
 
     // Validasi
@@ -114,8 +121,12 @@ export default async function handler(req, res) {
     /* =========================
        FORMAT DATE (NO TIME)
     ========================= */
-    const date = new Date().toLocaleDateString('id-ID');
-
+    const date = new Date().toLocaleDateString('id-ID', {
+  timeZone: 'Asia/Jakarta',
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric'
+  });
     /* =========================
        TELEGRAM MESSAGE FORMAT
     ========================= */
@@ -126,7 +137,7 @@ export default async function handler(req, res) {
 🎮 Target      : ${modName}
 
 📑 Description :
-${description}
+${formattedDesc}
 
 ━━━━━━━━━━━━━━━
 📞 Contact     : ${contactText}
