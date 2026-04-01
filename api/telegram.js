@@ -33,10 +33,15 @@ function isRateLimited(ip) {
 /* =========================
    SANITIZE (ANTI FORMAT BREAK)
 ========================= */
-function sanitize(text = '') {
-  return String(text).replace(/[_*[\]()~`>#+=|{}.!-]/g, '');
+// untuk name, mod, description
+function sanitizeText(text = '') {
+  return String(text).replace(/[*[\]()~`>#+=|{}.!-]/g, '');
 }
 
+// khusus contact (JANGAN hapus underscore & @)
+function sanitizeContact(text = '') {
+  return String(text).replace(/[*[\]()~`>#+=|{}!]/g, '');
+}
 /* =========================
    HANDLER
 ========================= */
@@ -74,9 +79,9 @@ export default async function handler(req, res) {
     if (!name) name = "Anonymous";
 
     // Sanitasi
-    name = sanitize(name);
-    modName = sanitize(modName);
-    description = sanitize(description);
+    name = sanitizeText(name);
+    modName = sanitizeText(modName);
+    description = sanitizeText(description);
     const formattedDesc = description
   .split('\n')
   .flatMap(line => line.split(',')) // pecah koma
@@ -84,7 +89,7 @@ export default async function handler(req, res) {
   .filter(Boolean)
   .map(item => `- ${item.charAt(0).toUpperCase() + item.slice(1)}`)
   .join('\n');
-    contact = sanitize(contact);
+    contact = sanitizeContact(contact);
 
     // Validasi
     if (!modName || !description) {
@@ -104,19 +109,23 @@ export default async function handler(req, res) {
     ========================= */
     let contactText = 'Not Provided';
 
-    if (contact) {
-      if (contact.startsWith('@')) {
-        contactText = contact;
-      } else if (/^(08|\+628|628)/.test(contact)) {
-        let clean = contact.replace(/\D/g, '');
-        if (clean.startsWith('0')) {
-          clean = '62' + clean.substring(1);
-        }
-        contactText = `https://wa.me/${clean}`;
-      } else {
-        contactText = contact;
-      }
+if (contact) {
+  if (contact.startsWith('@')) {
+    // 🔒 sanitize khusus username telegram
+    const cleanUsername = contact.replace(/[^a-zA-Z0-9_]/g, '');
+    contactText = '@' + cleanUsername;
+
+  } else if (/^(08|\+628|628)/.test(contact)) {
+    let clean = contact.replace(/\D/g, '');
+    if (clean.startsWith('0')) {
+      clean = '62' + clean.substring(1);
     }
+    contactText = `https://wa.me/${clean}`;
+
+  } else {
+    contactText = contact;
+  }
+   }
 
     /* =========================
        FORMAT DATE (NO TIME)
