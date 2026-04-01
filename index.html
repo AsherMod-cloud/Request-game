@@ -104,17 +104,20 @@ class="fixed bottom-4 right-4 bg-gray-800 border border-gray-700 px-4 py-2 round
 </button>
 
 <script>
+
 const form = document.getElementById('requestForm');
 const status = document.getElementById('status');
 const btn = document.getElementById('submitBtn');
 const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
+
 const modal = document.getElementById('modal');
 const closeModal = document.getElementById('closeModal');
-const dontShow = document.getElementById('dontShow');
+
 const clickSound = document.getElementById('clickSound');
 const successSound = document.getElementById('successSound');
 const errorSound = document.getElementById('errorSound');
+
 const soundToggle = document.getElementById('soundToggle');
 
 let isSubmitting = false;
@@ -147,30 +150,19 @@ audio.play().catch(() => {});
 }
 
 /* =========================
-   WELCOME MODAL
+WELCOME MODAL
 ========================= */
 
-// tampilkan hanya kalau BELUM diset
 window.addEventListener("load", () => {
-    const hide = localStorage.getItem("hideWelcome");
-
-    if (hide !== "true") {
-        setTimeout(() => {
-            modal.classList.remove('hidden');
-        }, 300);
-    }
+if (!localStorage.getItem("welcomeShown")) {
+setTimeout(() => modal.classList.remove('hidden'), 300);
+}
 });
 
-// tombol close
 closeModal.onclick = () => {
-    modal.classList.add('hidden');
-
-    // ❗ hanya simpan kalau checkbox dicentang
-    if (dontShow.checked) {
-        localStorage.setItem("hideWelcome", "true");
-    }
-
-    playSound(clickSound);
+modal.classList.add('hidden');
+localStorage.setItem("welcomeShown", "true");
+playSound(clickSound);
 };
 
 /* =========================
