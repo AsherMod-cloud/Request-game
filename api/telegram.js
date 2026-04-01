@@ -2,12 +2,18 @@ export const runtime = 'nodejs';
 
 const rateLimit = new Map();
 
+/* =========================
+   GET REAL IP
+========================= */
 function getClientIP(req) {
   const xff = req.headers['x-forwarded-for'];
   if (!xff) return 'unknown';
-  return xff.split(',')[0].trim(); // ambil IP asli
+  return xff.split(',')[0].trim();
 }
 
+/* =========================
+   RATE LIMIT (3 req / 60s)
+========================= */
 function isRateLimited(ip) {
   const now = Date.now();
   const windowTime = 60 * 1000;
@@ -24,11 +30,16 @@ function isRateLimited(ip) {
   return timestamps.length > maxReq;
 }
 
-// sanitasi basic (hindari format aneh di Telegram)
-function sanitize(text) {
+/* =========================
+   SANITIZE (ANTI FORMAT BREAK)
+========================= */
+function sanitize(text = '') {
   return String(text).replace(/[_*[\]()~`>#+=|{}.!-]/g, '');
 }
 
+/* =========================
+   HANDLER
+========================= */
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -44,7 +55,7 @@ export default async function handler(req, res) {
     });
   }
 
-  // 🕳 Honeypot
+  // 🕳 Honeypot (anti bot)
   if (req.body?.website) {
     return res.status(400).end();
   }
@@ -59,15 +70,16 @@ export default async function handler(req, res) {
       throw new Error("Konfigurasi server belum lengkap");
     }
 
-    // default name
+    // Default name
     if (!name) name = "Anonymous";
 
-    // sanitasi
+    // Sanitasi
     name = sanitize(name);
     modName = sanitize(modName);
     description = sanitize(description);
     contact = sanitize(contact);
 
+    // Validasi
     if (!modName || !description) {
       throw new Error("Game dan Detail wajib diisi");
     }
@@ -80,8 +92,10 @@ export default async function handler(req, res) {
       throw new Error("Kontak terlalu panjang");
     }
 
-    // 📞 Format contact
-    let contactText = '-';
+    /* =========================
+       FORMAT CONTACT
+    ========================= */
+    let contactText = 'Not Provided';
 
     if (contact) {
       if (contact.startsWith('@')) {
@@ -97,36 +111,33 @@ export default async function handler(req, res) {
       }
     }
 
-    // 📅 Format tanggal (tanpa jam)
-const date = new Date().toLocaleDateString('id-ID', {
-  timeZone: 'Asia/Jakarta'
-});
+    /* =========================
+       FORMAT DATE (NO TIME)
+    ========================= */
+    const date = new Date().toLocaleDateString('id-ID');
 
-// 📞 fallback contact
-const finalContact = contactText === '-' ? 'Not Provided' : contactText;
-
-// 📑 auto bullet description
-const formattedDesc = description
-  .split('\n')
-  .map(line => `- ${line}`)
-  .join('\n');
-
-const text = `
+    /* =========================
+       TELEGRAM MESSAGE FORMAT
+    ========================= */
+    const text = `
 🛠 NEW MOD REQUEST
 ━━━━━━━━━━━━━━━
 👤 Sender      : ${name}
 🎮 Target      : ${modName}
 
 📑 Description :
-${formattedDesc}
+${description}
 
 ━━━━━━━━━━━━━━━
-📞 Contact     : ${finalContact}
+📞 Contact     : ${contactText}
 📅 Date        : ${date}
 🌐 Source      : AsherMod Portal v1.0
 ━━━━━━━━━━━━━━━
 `;
 
+    /* =========================
+       SEND TO TELEGRAM
+    ========================= */
     const tg = await fetch(
       `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
       {
@@ -155,4 +166,4 @@ ${formattedDesc}
       error: err.message
     });
   }
-                                              }
+      }
