@@ -86,8 +86,13 @@
                 <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>  
                 <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>  
             </ul>  
-        </div>  
+        </div> 
 
+        <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-300 text-xs">
+           ⚠️ Tidak semua game bisa dimod <br>
+           📌 Game server-side kemungkinan besar tidak diproses
+        </div>
+        
         <div class="flex items-center justify-center gap-3 mb-6 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group" onclick="document.getElementById('dontShow').click()">  
             <input type="checkbox" id="dontShow" class="custom-checkbox" onclick="event.stopPropagation()">  
             <label for="dontShow" class="text-sm text-gray-400 cursor-pointer group-hover:text-gray-300 transition-colors">Jangan tampilkan lagi</label>  
@@ -153,44 +158,37 @@ const modal = document.getElementById('modal');
 const closeModal = document.getElementById('closeModal');
 const dontShow = document.getElementById('dontShow');
 
-const clickSound = document.getElementById('clickSound');
-const successSound = document.getElementById('successSound');
-const errorSound = document.getElementById('errorSound');
-
-const soundToggle = document.getElementById('soundToggle');
-
-let isSubmitting = false;
-
 const warningModal = document.getElementById('warningModal');
 const confirmWarning = document.getElementById('confirmWarning');
 const cancelWarning = document.getElementById('cancelWarning');
 
+const clickSound = document.getElementById('clickSound');
+const successSound = document.getElementById('successSound');
+const errorSound = document.getElementById('errorSound');
+const soundToggle = document.getElementById('soundToggle');
+
+let isSubmitting = false;
 let pendingSubmit = null;
 
 /* =========================
-    BLOCKED GAME
+   HARD GAME DETECT
 ========================= */
-
 function isHardGame(name) {
     const hardGames = [
-  "free fire",
-  "ff",
-  "pubg",
-  "pubg mobile",
-  "cod mobile",
-  "ml",
-  "mobile legends"
-  ];
+        "free fire", "ff",
+        "pubg", "pubg mobile",
+        "cod mobile",
+        "ml", "mobile legends"
+    ];
 
     return hardGames.some(game =>
         name.toLowerCase().includes(game)
     );
-        }
+}
 
 /* =========================
    WARNING MODAL
 ========================= */
-
 confirmWarning.onclick = () => {
     warningModal.classList.add('hidden');
 
@@ -208,8 +206,7 @@ cancelWarning.onclick = () => {
 /* =========================
    COOLDOWN SYSTEM (PERSIST)
 ========================= */
-
-const COOLDOWN_TIME = 30; // detik
+const COOLDOWN_TIME = 30;
 
 function getRemainingCooldown() {
     const last = localStorage.getItem("lastSubmit");
@@ -238,31 +235,9 @@ function startCooldown() {
     }, 1000);
 }
 
-// Restore cooldown saat reload
-window.addEventListener("load", () => {
-    const remaining = getRemainingCooldown();
-
-    if (remaining > 0) {
-        let timeLeft = remaining;
-        btn.disabled = true;
-
-        const interval = setInterval(() => {
-            timeLeft--;
-            btnText.innerText = `Tunggu ${timeLeft}s`;
-
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                btn.disabled = false;
-                btnText.innerText = "Kirim Request";
-            }
-        }, 1000);
-    }
-});
-
 /* =========================
    FINGERPRINT
 ========================= */
-
 function getFingerprint() {
     return btoa(
         navigator.userAgent +
@@ -275,7 +250,6 @@ function getFingerprint() {
 /* =========================
    SOUND SYSTEM
 ========================= */
-
 let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
 
 function updateSoundUI() {
@@ -296,31 +270,8 @@ function playSound(audio) {
 }
 
 /* =========================
-   WELCOME MODAL
-========================= */
-
-window.addEventListener("load", () => {
-    const hide = localStorage.getItem("hideWelcome");
-
-    if (hide !== "true") {
-        setTimeout(() => modal.classList.remove('hidden'), 300);
-    }
-});
-
-closeModal.onclick = () => {
-    modal.classList.add('hidden');
-
-    if (dontShow.checked) {
-        localStorage.setItem("hideWelcome", "true");
-    }
-
-    playSound(clickSound);
-};
-
-/* =========================
    STOP SOUND (BACKGROUND FIX)
 ========================= */
-
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         [clickSound, successSound, errorSound].forEach(a => {
@@ -333,7 +284,6 @@ document.addEventListener("visibilitychange", () => {
 /* =========================
    VALIDASI CONTACT
 ========================= */
-
 function isValidContact(input) {
     if (!input) return true;
     if (input.startsWith('@') && input.length >= 5) return true;
@@ -344,7 +294,6 @@ function isValidContact(input) {
 /* =========================
    GLOBAL CLICK SOUND
 ========================= */
-
 document.addEventListener("click", (e) => {
     if (e.target.closest("button")) {
         playSound(clickSound);
@@ -352,12 +301,57 @@ document.addEventListener("click", (e) => {
 });
 
 /* =========================
+   INIT (LOAD)
+========================= */
+window.addEventListener("load", () => {
+    // restore cooldown
+    const remaining = getRemainingCooldown();
+    if (remaining > 0) {
+        let timeLeft = remaining;
+        btn.disabled = true;
+
+        const interval = setInterval(() => {
+            timeLeft--;
+            btnText.innerText = `Tunggu ${timeLeft}s`;
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                btn.disabled = false;
+                btnText.innerText = "Kirim Request";
+            }
+        }, 1000);
+    }
+
+    // welcome modal
+    const hide = localStorage.getItem("hideWelcome");
+    if (hide !== "true") {
+        setTimeout(() => modal.classList.remove('hidden'), 300);
+    }
+});
+
+/* =========================
+   CLOSE WELCOME
+========================= */
+closeModal.onclick = () => {
+    modal.classList.add('hidden');
+
+    if (dontShow.checked) {
+        localStorage.setItem("hideWelcome", "true");
+    }
+
+    playSound(clickSound);
+};
+
+/* =========================
    SUBMIT FORM
 ========================= */
-
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     if (isSubmitting) return;
+
+    // cegah double modal
+    if (!warningModal.classList.contains('hidden')) return;
 
     let name = document.getElementById('name').value.trim();
     const modName = document.getElementById('modName').value.trim();
@@ -366,18 +360,26 @@ form.addEventListener('submit', async (e) => {
 
     if (!name) name = "Anonymous";
 
-    // 🔥 CHECK HARD GAME
+    if (!isValidContact(contact)) {
+        status.innerHTML = "<span class='text-red-400'>❌ Format kontak tidak valid</span>";
+        playSound(errorSound);
+        return;
+    }
+
+    // 🔥 Hard game check
     if (isHardGame(modName)) {
         warningModal.classList.remove('hidden');
-
-        // simpan data sementara
         pendingSubmit = { name, modName, description, contact };
         return;
     }
 
     sendRequest({ name, modName, description, contact });
 });
-    async function sendRequest(data) {
+
+/* =========================
+   SEND REQUEST
+========================= */
+async function sendRequest(data) {
     isSubmitting = true;
     btn.disabled = true;
     btn.classList.add('opacity-70');
@@ -415,14 +417,16 @@ form.addEventListener('submit', async (e) => {
     } finally {
         isSubmitting = false;
 
-        if (cooldown <= 0) {
+        const remaining = getRemainingCooldown();
+
+        if (remaining <= 0) {
             btn.disabled = false;
             btn.classList.remove('opacity-70');
             spinner.classList.add('hidden');
             btnText.innerText = "Kirim Request";
         }
     }
-    }
+}
 </script>
 
 </body>  
