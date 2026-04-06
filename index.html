@@ -73,58 +73,83 @@
     <div id="status" class="mt-4 text-center text-sm font-medium min-h-[1.25rem]"></div>  
 </div>  
 
-<div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">  
-    <div class="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] text-center max-w-sm w-full shadow-2xl animate-pop relative overflow-hidden">  
-        <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">  
-            <span class="text-3xl">👋</span>  
-        </div>  
-        <h2 class="text-2xl font-bold text-white mb-2">Halo, User!</h2>  
-        <div class="space-y-5">
-    <div class="space-y-3 text-gray-400 text-sm leading-relaxed">
+<!-- =========================
+     WELCOME MODAL
+========================= -->
+<div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] text-center max-w-sm w-full shadow-2xl animate-pop relative overflow-hidden">
+
+    <!-- ICON -->
+    <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
+      <span class="text-3xl">👋</span>
+    </div>
+
+    <!-- TITLE -->
+    <h2 class="text-2xl font-bold text-white mb-2">Halo, User!</h2>
+
+    <!-- CONTENT -->
+    <div class="space-y-5">
+
+      <div class="space-y-3 text-gray-400 text-sm leading-relaxed">
         <p>Selamat datang di form request. Mohon perhatikan poin berikut:</p>  
         <ul class="text-left space-y-2 inline-block mx-auto">  
-            <li class="flex items-center gap-2"><span class="text-blue-400">✓</span> Deskripsi harus jelas</li>  
-            <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>  
-            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>  
+          <li class="flex items-center gap-2"><span class="text-blue-400">✓</span> Deskripsi harus jelas</li>  
+          <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>  
+          <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>  
         </ul>  
-    </div> 
+      </div> 
 
-    <!-- WARNING -->
-    <div class="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-300 text-xs">
+      <!-- WARNING -->
+      <div class="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-300 text-xs shadow-inner">
         ⚠️ Tidak semua game bisa dimod <br>
         📌 Game server-side kemungkinan besar tidak diproses
-    </div>
+      </div>
 
-    <!-- CHECKBOX -->
-    <div class="flex items-center justify-center gap-3 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group"
-         onclick="document.getElementById('dontShow').click()">  
+      <!-- CHECKBOX -->
+      <div class="flex items-center justify-center gap-3 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group"
+           onclick="document.getElementById('dontShow').click()">  
         <input type="checkbox" id="dontShow" class="custom-checkbox" onclick="event.stopPropagation()">  
         <label class="text-sm text-gray-400 cursor-pointer group-hover:text-gray-300 transition-colors">
-            Jangan tampilkan lagi
+          Jangan tampilkan lagi
         </label>  
-    </div>
+      </div>
 
-        <button id="closeModal" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-900/20">  
-            Saya Mengerti  
-        </button>  
-          
-        <p class="mt-4 text-[10px] text-gray-600 uppercase tracking-tighter italic">Credit: AsherMod Dev</p>  
-    </div>  
+    </div> <!-- ✅ space-y closed -->
+
+    <!-- BUTTON -->
+    <button id="closeModal"
+      class="w-full mt-2 bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-900/20">
+      Saya Mengerti
+    </button>  
+    
+    <p class="mt-4 text-[10px] text-gray-600 uppercase tracking-tighter italic">
+      Credit: AsherMod Dev
+    </p>
+
+  </div>
 </div>
-    
-<!-- HARD GAME WARNING MODAL -->
-<div id="warningModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+
+
+<!-- =========================
+     HARD GAME WARNING MODAL
+========================= -->
+<div id="warningModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-[60] p-4">
   <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center max-w-sm w-full shadow-2xl animate-pop">
-    
+
     <div class="text-3xl mb-3">⚠️</div>
-    
+
     <h2 class="text-xl font-bold text-white mb-2">
       Game Sulit Dimod
     </h2>
 
-    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+    <p class="text-gray-400 text-sm mb-4 leading-relaxed">
       Game ini kemungkinan besar <b>server-side</b> atau memiliki proteksi tinggi.<br>
       Request tetap bisa dikirim, tapi kemungkinan kecil diproses.
+    </p>
+
+    <!-- TAG -->
+    <p class="text-xs text-yellow-400 mb-5">
+      ⚠️ Type: Server-side / Low Priority
     </p>
 
     <div class="flex gap-3">
@@ -142,17 +167,22 @@
   </div>
 </div>
 
-<!-- AUDIO SYSTEM -->
 
+<!-- =========================
+     AUDIO SYSTEM
+========================= -->
 <audio id="clickSound" src="sounds/mouse-click.mp3" preload="auto"></audio>
 <audio id="successSound" src="sounds/Successfully.m4a" preload="auto"></audio>
 <audio id="errorSound" src="sounds/error-beep.mp3" preload="auto"></audio>
 
-<!-- SOUND TOGGLE -->  
-<button id="soundToggle"  
-class="fixed bottom-4 right-4 bg-gray-800 border border-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-700 transition">
+
+<!-- =========================
+     SOUND TOGGLE (OUTSIDE MODAL)
+========================= -->
+<button id="soundToggle"
+class="fixed bottom-4 right-4 z-[70] bg-gray-800 border border-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-700 transition">
 🔊 Sound: ON
-</button>
+    </button>
 
 <script>
 const form = document.getElementById('requestForm');
