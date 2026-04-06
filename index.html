@@ -132,6 +132,25 @@ const soundToggle = document.getElementById('soundToggle');
 let isSubmitting = false;
 
 /* =========================
+    BLOCKED GAME
+========================= */
+
+function isServerSideGame(name) {
+  const lower = name.toLowerCase();
+  return blockedGames.some(g => lower.includes(g));
+    } 
+
+const blockedGames = [
+  "free fire",
+  "ff",
+  "pubg",
+  "pubg mobile",
+  "cod mobile",
+  "ml",
+  "mobile legends"
+];
+
+/* =========================
    COOLDOWN SYSTEM (PERSIST)
 ========================= */
 
@@ -312,6 +331,20 @@ form.addEventListener('submit', async (e) => {
     btnText.innerText = "Mengirim...";
 
     try {
+        if (isServerSideGame(modName)) {
+    const confirmSend = confirm(
+`⚠️ WARNING
+
+Game ini kemungkinan besar server-side / sulit dimod.
+
+Apakah kamu tetap ingin mengirim request?`
+    );
+
+    if (!confirmSend) {
+        playSound(errorSound);
+        return;
+    }
+}
         status.innerHTML = "<span class='text-blue-400 animate-pulse'>⏳ Mengirim request...</span>";
 
         const res = await fetch('/api/telegram', {
