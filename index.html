@@ -370,6 +370,7 @@ form.addEventListener('submit', async (e) => {
     if (isHardGame(modName)) {
         warningModal.classList.remove('hidden');
         pendingSubmit = { name, modName, description, contact };
+        playSound(errorSound);
         return;
     }
 
