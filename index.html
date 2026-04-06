@@ -99,7 +99,37 @@
           
         <p class="mt-4 text-[10px] text-gray-600 uppercase tracking-tighter italic">Credit: AsherMod Dev</p>  
     </div>  
-</div>  
+</div>
+
+<!-- HARD GAME WARNING MODAL -->
+<div id="warningModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center max-w-sm w-full shadow-2xl animate-pop">
+    
+    <div class="text-3xl mb-3">⚠️</div>
+    
+    <h2 class="text-xl font-bold text-white mb-2">
+      Game Sulit Dimod
+    </h2>
+
+    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+      Game ini kemungkinan besar <b>server-side</b> atau memiliki proteksi tinggi.<br>
+      Request tetap bisa dikirim, tapi kemungkinan kecil diproses.
+    </p>
+
+    <div class="flex gap-3">
+      <button id="cancelWarning"
+        class="w-full bg-gray-700 text-white py-2.5 rounded-xl hover:bg-gray-600 transition">
+        Batal
+      </button>
+
+      <button id="confirmWarning"
+        class="w-full bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-500 transition">
+        Tetap Kirim
+      </button>
+    </div>
+
+  </div>
+</div>
 
 <!-- AUDIO SYSTEM -->
 
@@ -131,16 +161,18 @@ const soundToggle = document.getElementById('soundToggle');
 
 let isSubmitting = false;
 
+const warningModal = document.getElementById('warningModal');
+const confirmWarning = document.getElementById('confirmWarning');
+const cancelWarning = document.getElementById('cancelWarning');
+
+let pendingSubmit = null;
+
 /* =========================
     BLOCKED GAME
 ========================= */
 
-function isServerSideGame(name) {
-  const lower = name.toLowerCase();
-  return blockedGames.some(g => lower.includes(g));
-    } 
-
-const blockedGames = [
+function isHardGame(name) {
+    const hardGames = [
   "free fire",
   "ff",
   "pubg",
@@ -148,7 +180,12 @@ const blockedGames = [
   "cod mobile",
   "ml",
   "mobile legends"
-];
+  ];
+
+    return hardGames.some(game =>
+        name.toLowerCase().includes(game)
+    );
+        }
 
 /* =========================
    COOLDOWN SYSTEM (PERSIST)
@@ -304,13 +341,6 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    // 🚫 BLOCK kalau masih cooldown
-    if (getRemainingCooldown() > 0) {
-        status.innerHTML = "<span class='text-yellow-400'>⏳ Tunggu cooldown selesai</span>";
-        playSound(errorSound);
-        return;
-    }
-
     let name = document.getElementById('name').value.trim();
     const modName = document.getElementById('modName').value.trim();
     const description = document.getElementById('description').value.trim();
@@ -318,12 +348,18 @@ form.addEventListener('submit', async (e) => {
 
     if (!name) name = "Anonymous";
 
-    if (!isValidContact(contact)) {
-        status.innerHTML = "<span class='text-red-400'>❌ Format kontak tidak valid</span>";
-        playSound(errorSound);
+    // 🔥 CHECK HARD GAME
+    if (isHardGame(modName)) {
+        warningModal.classList.remove('hidden');
+
+        // simpan data sementara
+        pendingSubmit = { name, modName, description, contact };
         return;
     }
 
+    sendRequest({ name, modName, description, contact });
+});
+    async function sendRequest(data) {
     isSubmitting = true;
     btn.disabled = true;
     btn.classList.add('opacity-70');
@@ -331,30 +367,13 @@ form.addEventListener('submit', async (e) => {
     btnText.innerText = "Mengirim...";
 
     try {
-        if (isServerSideGame(modName)) {
-    const confirmSend = confirm(
-`⚠️ WARNING
-
-Game ini kemungkinan besar server-side / sulit dimod.
-
-Apakah kamu tetap ingin mengirim request?`
-    );
-
-    if (!confirmSend) {
-        playSound(errorSound);
-        return;
-    }
-}
         status.innerHTML = "<span class='text-blue-400 animate-pulse'>⏳ Mengirim request...</span>";
 
         const res = await fetch('/api/telegram', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                name,
-                modName,
-                description,
-                contact,
+                ...data,
                 fingerprint: getFingerprint(),
                 website: document.getElementById('website')?.value || ""
             })
@@ -370,22 +389,22 @@ Apakah kamu tetap ingin mengirim request?`
         status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";
         form.reset();
 
-        // 🔥 START COOLDOWN
         startCooldown();
 
     } catch (err) {
         status.innerHTML = `<span class='text-red-400'>❌ ${err.message}</span>`;
         playSound(errorSound);
-
-        // ⚠️ reset button kalau gagal
-        btn.disabled = false;
-        btn.classList.remove('opacity-70');
-        spinner.classList.add('hidden');
-        btnText.innerText = "Kirim Request";
     } finally {
         isSubmitting = false;
+
+        if (cooldown <= 0) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-70');
+            spinner.classList.add('hidden');
+            btnText.innerText = "Kirim Request";
+        }
     }
-});
+    }
 </script>
 
 </body>  
