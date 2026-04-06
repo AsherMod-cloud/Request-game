@@ -188,6 +188,24 @@ function isHardGame(name) {
         }
 
 /* =========================
+   WARNING MODAL
+========================= */
+
+confirmWarning.onclick = () => {
+    warningModal.classList.add('hidden');
+
+    if (pendingSubmit) {
+        sendRequest(pendingSubmit);
+        pendingSubmit = null;
+    }
+};
+
+cancelWarning.onclick = () => {
+    warningModal.classList.add('hidden');
+    pendingSubmit = null;
+};
+
+/* =========================
    COOLDOWN SYSTEM (PERSIST)
 ========================= */
 
