@@ -73,37 +73,32 @@
     <div id="status" class="mt-4 text-center text-sm font-medium min-h-[1.25rem]"></div>  
 </div>  
 
-<div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">  
-    <div class="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] text-center max-w-sm w-full shadow-2xl animate-pop relative overflow-hidden">  
-        <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">  
-            <span class="text-3xl">👋</span>  
-        </div>  
-        <h2 class="text-2xl font-bold text-white mb-2">Halo, User!</h2>  
-        <div class="space-y-3 mb-6 text-gray-400 text-sm leading-relaxed">  
-            <p>Selamat datang di form request. Mohon perhatikan poin berikut:</p>  
-            <ul class="text-left space-y-2 inline-block mx-auto">  
-                <li class="flex items-center gap-2"><span class="text-blue-400">✓</span> Deskripsi harus jelas</li>  
-                <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>  
-                <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>  
-            </ul>  
-        </div> 
+<div class="space-y-5">
+    
+    <div class="space-y-3 text-gray-400 text-sm leading-relaxed">
+        <p>Selamat datang di form request. Mohon perhatikan poin berikut:</p>  
+        <ul class="text-left space-y-2 inline-block mx-auto">  
+            <li class="flex items-center gap-2"><span class="text-blue-400">✓</span> Deskripsi harus jelas</li>  
+            <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>  
+            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>  
+        </ul>  
+    </div> 
 
-        <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-300 text-xs">
-           ⚠️ Tidak semua game bisa dimod <br>
-           📌 Game server-side kemungkinan besar tidak diproses
-        </div>
-        
-        <div class="flex items-center justify-center gap-3 mb-6 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group" onclick="document.getElementById('dontShow').click()">  
-            <input type="checkbox" id="dontShow" class="custom-checkbox" onclick="event.stopPropagation()">  
-            <label for="dontShow" class="text-sm text-gray-400 cursor-pointer group-hover:text-gray-300 transition-colors">Jangan tampilkan lagi</label>  
-        </div>  
+    <!-- WARNING -->
+    <div class="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-300 text-xs shadow-inner"
+        ⚠️ Tidak semua game bisa dimod <br>
+        📌 Game server-side kemungkinan besar tidak diproses
+    </div>
 
-        <button id="closeModal" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-900/20">  
-            Saya Mengerti  
-        </button>  
-          
-        <p class="mt-4 text-[10px] text-gray-600 uppercase tracking-tighter italic">Credit: AsherMod Dev</p>  
-    </div>  
+    <!-- CHECKBOX -->
+    <div class="flex items-center justify-center gap-3 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group"
+         onclick="document.getElementById('dontShow').click()">  
+        <input type="checkbox" id="dontShow" class="custom-checkbox" onclick="event.stopPropagation()">  
+        <label class="text-sm text-gray-400 cursor-pointer group-hover:text-gray-300 transition-colors">
+            Jangan tampilkan lagi
+        </label>  
+    </div>
+
 </div>
 
 <!-- HARD GAME WARNING MODAL -->
