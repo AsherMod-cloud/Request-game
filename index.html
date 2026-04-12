@@ -1,132 +1,164 @@
-<!DOCTYPE html>  <html lang="id">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Request Mod | AsherMod</title>  
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Mod | AsherMod</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <script src="https://cdn.tailwindcss.com"></script>  
-    <style>  
-        @keyframes fadeIn {  
-            from { opacity: 0; transform: scale(0.95); }  
-            to { opacity: 1; transform: scale(1); }  
-        }  
-        .animate-pop { animation: fadeIn 0.3s ease-out forwards; }  .glow-text {  
-        text-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(147, 51, 234, 0.3);  
-    }  
-    .glow-input:focus {  
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);  
-    }  
-    /* Custom Checkbox Style */  
-    .custom-checkbox {  
-        width: 18px;  
-        height: 18px;  
-        cursor: pointer;  
-        accent-color: #3b82f6;  
-    }  
-</style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(59,130,246,0.15); }
+            50% { box-shadow: 0 0 25px rgba(59,130,246,0.3); }
+        }
+        .animate-pop { animation: fadeIn 0.3s ease-out forwards; }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(59,130,246,0.5), 0 0 20px rgba(147,51,234,0.3);
+        }
+        .glow-input:focus {
+            box-shadow: 0 0 15px rgba(59,130,246,0.2);
+        }
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+        .contact-hint {
+            transition: all 0.2s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .contact-hint.show {
+            max-height: 60px;
+            opacity: 1;
+        }
+        .input-error {
+            border-color: rgba(239,68,68,0.6) !important;
+            box-shadow: 0 0 12px rgba(239,68,68,0.15) !important;
+        }
+        .input-ok {
+            border-color: rgba(34,197,94,0.5) !important;
+        }
+    </style>
+</head>
 
-</head>  <body class="bg-[#050505] text-gray-200 min-h-screen flex items-center justify-center p-4 selection:bg-purple-500/30 font-sans">  <div class="bg-gray-900/50 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-xl border border-gray-800/50 relative overflow-hidden">  
-    <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl"></div>  
-      
-    <div class="text-center mb-8 relative">  
-        <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 text-transparent bg-clip-text glow-text tracking-tight">  
-            ✨ Request Mod  
-        </h1>  
-        <p class="text-gray-500 mt-2 text-sm font-medium uppercase tracking-widest italic">v1.0 • AsherMod Portal</p>  
-    </div>  
+<body class="bg-[#050505] text-gray-200 min-h-screen flex items-center justify-center p-4 selection:bg-purple-500/30 font-sans">
 
-    <form id="requestForm" class="space-y-5 relative">  
-        <div class="group">  
-            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">PENGIRIM</label>  
-            <input type="text" id="name" class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input" placeholder="Kosongkan untuk anonim">  
-        </div>  
+<div class="bg-gray-900/50 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-xl border border-gray-800/50 relative overflow-hidden">
+    <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl"></div>
 
-        <input 
-         type="text" 
-          id="website" 
-           name="website"
-            autocomplete="off"
-             tabindex="-1"
-           style="position:absolute; left:-9999px;">
+    <div class="text-center mb-8 relative">
+        <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 text-transparent bg-clip-text glow-text tracking-tight">
+            ✨ Request Mod
+        </h1>
+        <p class="text-gray-500 mt-2 text-sm font-medium uppercase tracking-widest italic">v1.1 • AsherMod Portal</p>
+    </div>
 
-        <div class="group">  
-            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">TARGET GAME / APP</label>  
-            <input type="text" id="modName" required class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input" placeholder="Contoh: Subway Surfers, Minecraft">  
-        </div>  
+    <form id="requestForm" class="space-y-5 relative">
 
-        <div class="group">  
-            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">DETAIL FITUR</label>  
-            <textarea id="description" required rows="4" class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input resize-none" placeholder="Sebutkan fitur mod yang diinginkan..."></textarea>  
-        </div>  
+        <!-- HONEYPOT -->
+        <input type="text" id="website" name="website" autocomplete="off" tabindex="-1"
+               style="position:absolute; left:-9999px; opacity:0; pointer-events:none;">
 
-        <div class="group">  
-            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">CONTACT INFO</label>  
-            <input type="text" id="contact" class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input" placeholder="@telegram / WhatsApp">  
-        </div>  
+        <!-- PENGIRIM -->
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">PENGIRIM</label>
+            <input type="text" id="name" maxlength="50"
+                   class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input"
+                   placeholder="Kosongkan untuk anonim">
+        </div>
 
-        <button id="submitBtn" class="w-full bg-gradient-to-br from-blue-600 to-purple-700 py-4 rounded-2xl font-bold text-white shadow-lg shadow-blue-900/20 hover:shadow-blue-600/20 hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-3">  
-            <span id="btnText">Kirim Request</span>  
-            <span id="spinner" class="hidden animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full"></span>  
-        </button>  
-    </form>  
+        <!-- TARGET GAME -->
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">TARGET GAME / APP</label>
+            <input type="text" id="modName" required maxlength="100"
+                   class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input"
+                   placeholder="Contoh: Subway Surfers, Minecraft">
+        </div>
 
-    <div id="status" class="mt-4 text-center text-sm font-medium min-h-[1.25rem]"></div>  
-</div>  
+        <!-- DETAIL FITUR -->
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">DETAIL FITUR</label>
+            <textarea id="description" required rows="4" maxlength="1000"
+                      class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input resize-none"
+                      placeholder="Sebutkan fitur mod yang diinginkan..."></textarea>
+            <div class="flex justify-end mt-1">
+                <span id="charCount" class="text-xs text-gray-600">0 / 1000</span>
+            </div>
+        </div>
+
+        <!-- CONTACT INFO — dengan validasi visual -->
+        <div class="group">
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block transition-colors group-focus-within:text-blue-400">CONTACT INFO</label>
+            <div class="relative">
+                <input type="text" id="contact" maxlength="60"
+                       class="w-full p-3.5 rounded-2xl bg-gray-800/40 border border-gray-700/50 focus:border-blue-500/50 outline-none transition-all glow-input pr-10"
+                       placeholder="@username_telegram / 08xxxxxxxxxx"
+                       autocomplete="off" spellcheck="false">
+                <span id="contactIcon" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-lg hidden"></span>
+            </div>
+
+            <!-- Hint box — muncul saat user mulai ketik -->
+            <div id="contactHint" class="contact-hint mt-2 p-2.5 rounded-xl bg-gray-800/30 border border-gray-700/30 text-xs text-gray-500 space-y-1">
+                <p>✓ Telegram: <span class="text-blue-400">@username</span> (5–32 karakter, huruf/angka/_)</p>
+                <p>✓ WhatsApp: <span class="text-green-400">08xxxxxxxxxx</span> atau <span class="text-green-400">+628xxxxxxxxx</span></p>
+            </div>
+            <p id="contactError" class="text-xs text-red-400 ml-1 mt-1 hidden"></p>
+        </div>
+
+        <button id="submitBtn"
+                class="w-full bg-gradient-to-br from-blue-600 to-purple-700 py-4 rounded-2xl font-bold text-white shadow-lg shadow-blue-900/20 hover:shadow-blue-600/20 hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-3">
+            <span id="btnText">Kirim Request</span>
+            <span id="spinner" class="hidden animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full"></span>
+        </button>
+    </form>
+
+    <div id="status" class="mt-4 text-center text-sm font-medium min-h-[1.25rem]"></div>
+</div>
+
 
 <!-- =========================
      WELCOME MODAL
 ========================= -->
 <div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-  <div class="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] text-center max-w-sm w-full shadow-2xl animate-pop relative overflow-hidden">
-
-    <!-- ICON -->
-    <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
-      <span class="text-3xl">👋</span>
+    <div class="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] text-center max-w-sm w-full shadow-2xl animate-pop relative overflow-hidden">
+        <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
+            <span class="text-3xl">👋</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">Halo, User!</h2>
+        <div class="space-y-5">
+            <div class="space-y-3 text-gray-400 text-sm leading-relaxed">
+                <p>Selamat datang di form request. Mohon perhatikan poin berikut:</p>
+                <ul class="text-left space-y-2 inline-block mx-auto">
+                    <li class="flex items-center gap-2"><span class="text-blue-400">✓</span> Deskripsi harus jelas</li>
+                    <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>
+                    <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>
+                </ul>
+            </div>
+            <div class="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-300 text-xs shadow-inner">
+                ⚠️ Tidak semua game bisa dimod <br>
+                📌 Game server-side kemungkinan besar tidak diproses
+            </div>
+            <div class="flex items-center justify-center gap-3 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group"
+                 onclick="document.getElementById('dontShow').click()">
+                <input type="checkbox" id="dontShow" class="custom-checkbox" onclick="event.stopPropagation()">
+                <label class="text-sm text-gray-400 cursor-pointer group-hover:text-gray-300 transition-colors">
+                    Jangan tampilkan lagi
+                </label>
+            </div>
+        </div>
+        <button id="closeModal"
+                class="w-full mt-5 bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-900/20">
+            Saya Mengerti
+        </button>
+        <p class="mt-4 text-[10px] text-gray-600 uppercase tracking-tighter italic">Credit: AsherMod Dev</p>
     </div>
-
-    <!-- TITLE -->
-    <h2 class="text-2xl font-bold text-white mb-2">Halo, User!</h2>
-
-    <!-- CONTENT -->
-    <div class="space-y-5">
-
-      <div class="space-y-3 text-gray-400 text-sm leading-relaxed">
-        <p>Selamat datang di form request. Mohon perhatikan poin berikut:</p>  
-        <ul class="text-left space-y-2 inline-block mx-auto">  
-          <li class="flex items-center gap-2"><span class="text-blue-400">✓</span> Deskripsi harus jelas</li>  
-          <li class="flex items-center gap-2"><span class="text-red-400">×</span> Dilarang spam request</li>  
-          <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Sertakan kontak aktif</li>  
-        </ul>  
-      </div> 
-
-      <!-- WARNING -->
-      <div class="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-300 text-xs shadow-inner">
-        ⚠️ Tidak semua game bisa dimod <br>
-        📌 Game server-side kemungkinan besar tidak diproses
-      </div>
-
-      <!-- CHECKBOX -->
-      <div class="flex items-center justify-center gap-3 p-3 bg-gray-800/30 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer group"
-           onclick="document.getElementById('dontShow').click()">  
-        <input type="checkbox" id="dontShow" class="custom-checkbox" onclick="event.stopPropagation()">  
-        <label class="text-sm text-gray-400 cursor-pointer group-hover:text-gray-300 transition-colors">
-          Jangan tampilkan lagi
-        </label>  
-      </div>
-
-    </div> <!-- ✅ space-y closed -->
-
-    <!-- BUTTON -->
-    <button id="closeModal"
-      class="w-full mt-2 bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-900/20">
-      Saya Mengerti
-    </button>  
-    
-    <p class="mt-4 text-[10px] text-gray-600 uppercase tracking-tighter italic">
-      Credit: AsherMod Dev
-    </p>
-
-  </div>
 </div>
 
 
@@ -134,140 +166,246 @@
      HARD GAME WARNING MODAL
 ========================= -->
 <div id="warningModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-[60] p-4">
-  <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center max-w-sm w-full shadow-2xl animate-pop">
-
-    <div class="text-3xl mb-3">⚠️</div>
-
-    <h2 class="text-xl font-bold text-white mb-2">
-      Game Sulit Dimod
-    </h2>
-
-    <p class="text-gray-400 text-sm mb-4 leading-relaxed">
-      Game ini kemungkinan besar <b>server-side</b> atau memiliki proteksi tinggi.<br>
-      Request tetap bisa dikirim, tapi kemungkinan kecil diproses.
-    </p>
-
-    <!-- TAG -->
-    <p class="text-xs text-yellow-400 mb-5">
-      ⚠️ Type: Server-side / Low Priority
-    </p>
-
-    <div class="flex gap-3">
-      <button id="cancelWarning"
-        class="w-full bg-gray-700 text-white py-2.5 rounded-xl hover:bg-gray-600 transition">
-        Batal
-      </button>
-
-      <button id="confirmWarning"
-        class="w-full bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-500 transition">
-        Tetap Kirim
-      </button>
+    <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center max-w-sm w-full shadow-2xl animate-pop">
+        <div class="text-3xl mb-3">⚠️</div>
+        <h2 class="text-xl font-bold text-white mb-2">Game Sulit Dimod</h2>
+        <p class="text-gray-400 text-sm mb-4 leading-relaxed">
+            Game ini kemungkinan besar <b>server-side</b> atau memiliki proteksi tinggi.<br>
+            Request tetap bisa dikirim, tapi kemungkinan kecil diproses.
+        </p>
+        <p class="text-xs text-yellow-400 mb-5">⚠️ Type: Server-side / Low Priority</p>
+        <div class="flex gap-3">
+            <button id="cancelWarning" class="w-full bg-gray-700 text-white py-2.5 rounded-xl hover:bg-gray-600 transition">Batal</button>
+            <button id="confirmWarning" class="w-full bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-500 transition">Tetap Kirim</button>
+        </div>
     </div>
-
-  </div>
 </div>
 
 
 <!-- =========================
-     AUDIO SYSTEM
-========================= -->
-<audio id="clickSound" src="sounds/mouse-click.mp3" preload="auto"></audio>
-<audio id="successSound" src="sounds/Successfully.m4a" preload="auto"></audio>
-<audio id="errorSound" src="sounds/error-beep.mp3" preload="auto"></audio>
-
-
-<!-- =========================
-     SOUND TOGGLE (OUTSIDE MODAL)
+     SOUND TOGGLE
 ========================= -->
 <button id="soundToggle"
-class="fixed bottom-4 right-4 z-[70] bg-gray-800 border border-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-700 transition">
-🔊 Sound: ON
-    </button>
+        class="fixed bottom-4 right-4 z-[70] bg-gray-800 border border-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-700 transition">
+    🔊 Sound: ON
+</button>
+
 
 <script>
-const form = document.getElementById('requestForm');
-const status = document.getElementById('status');
-const btn = document.getElementById('submitBtn');
-const spinner = document.getElementById('spinner');
-const btnText = document.getElementById('btnText');
+/* =========================
+   ELEMENT REFS
+========================= */
+const form          = document.getElementById('requestForm');
+const statusEl      = document.getElementById('status');
+const btn           = document.getElementById('submitBtn');
+const spinner       = document.getElementById('spinner');
+const btnText       = document.getElementById('btnText');
 
-const modal = document.getElementById('modal');
-const closeModal = document.getElementById('closeModal');
-const dontShow = document.getElementById('dontShow');
+const modal         = document.getElementById('modal');
+const closeModalBtn = document.getElementById('closeModal');
+const dontShow      = document.getElementById('dontShow');
 
-const warningModal = document.getElementById('warningModal');
-const confirmWarning = document.getElementById('confirmWarning');
+const warningModal  = document.getElementById('warningModal');
+const confirmWarning= document.getElementById('confirmWarning');
 const cancelWarning = document.getElementById('cancelWarning');
 
-const clickSound = document.getElementById('clickSound');
-const successSound = document.getElementById('successSound');
-const errorSound = document.getElementById('errorSound');
-const soundToggle = document.getElementById('soundToggle');
+const soundToggle   = document.getElementById('soundToggle');
+
+const contactInput  = document.getElementById('contact');
+const contactHint   = document.getElementById('contactHint');
+const contactIcon   = document.getElementById('contactIcon');
+const contactError  = document.getElementById('contactError');
+const charCountEl   = document.getElementById('charCount');
+const descInput     = document.getElementById('description');
 
 let isSubmitting = false;
 let pendingSubmit = null;
+let sounds        = {}; // populated after blob-load
+
+/* =========================
+   SOUND SYSTEM — BLOB URL
+   (nama file asli tidak exposed di Network tab)
+========================= */
+let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
+
+function updateSoundUI() {
+    soundToggle.innerText = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+}
+updateSoundUI();
+
+soundToggle.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem("soundEnabled", soundEnabled);
+    updateSoundUI();
+});
+
+async function loadSoundAsBlob(path) {
+    try {
+        const res  = await fetch(path);
+        if (!res.ok) throw new Error('fetch failed');
+        const blob = await res.blob();
+        const url  = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        return audio;
+    } catch {
+        // fallback: Audio kosong, tidak akan error saat play()
+        return new Audio();
+    }
+}
+
+function playSound(audio) {
+    if (!soundEnabled || !audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+}
+
+// Stop sound saat tab tidak aktif
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+        Object.values(sounds).forEach(a => { a.pause(); a.currentTime = 0; });
+    }
+});
+
+// Global click sound
+document.addEventListener("click", (e) => {
+    if (e.target.closest("button") && sounds.click) {
+        playSound(sounds.click);
+    }
+});
+
+/* =========================
+   CONTACT VALIDATION
+========================= */
+// Telegram: @username, 5–32 char, hanya huruf/angka/underscore,
+//           tidak boleh diawali angka/underscore, tidak boleh diakhiri underscore
+const telegramRegex = /^@[a-zA-Z][a-zA-Z0-9_]{4,31}(?<!_)$/;
+// WhatsApp Indonesia
+const waRegex = /^(08|\+628)\d{8,13}$/;
+
+function classifyContact(val) {
+    if (!val) return 'empty';
+    if (val.startsWith('@')) return 'telegram';
+    if (/^(\+|0)/.test(val)) return 'phone';
+    return 'unknown';
+}
+
+function isValidContact(val) {
+    if (!val) return true;
+    return telegramRegex.test(val) || waRegex.test(val);
+}
+
+function getContactError(val) {
+    const type = classifyContact(val);
+    if (type === 'telegram') {
+        return "Username Telegram tidak valid. Contoh: @ashermod (min 5 karakter, hanya huruf/angka/_)";
+    }
+    if (type === 'phone') {
+        return "Nomor WA tidak valid. Contoh: 08123456789 atau +6281234567890";
+    }
+    return "Format tidak dikenali. Gunakan @username Telegram atau nomor WA";
+}
+
+// Live validation saat user ketik
+contactInput.addEventListener('input', () => {
+    const val = contactInput.value.trim();
+
+    // Tampilkan hint saat mulai ketik
+    if (val.length > 0) {
+        contactHint.classList.add('show');
+    } else {
+        contactHint.classList.remove('show');
+    }
+
+    // Reset state
+    contactInput.classList.remove('input-error', 'input-ok');
+    contactIcon.classList.add('hidden');
+    contactError.classList.add('hidden');
+
+    if (!val) return;
+
+    if (isValidContact(val)) {
+        contactInput.classList.add('input-ok');
+        contactIcon.textContent = '✅';
+        contactIcon.classList.remove('hidden');
+    } else {
+        contactInput.classList.add('input-error');
+        contactIcon.textContent = '❌';
+        contactIcon.classList.remove('hidden');
+        contactError.textContent = getContactError(val);
+        contactError.classList.remove('hidden');
+    }
+});
+
+/* =========================
+   CHAR COUNTER (DESCRIPTION)
+========================= */
+descInput.addEventListener('input', () => {
+    const len = descInput.value.length;
+    charCountEl.textContent = `${len} / 1000`;
+    charCountEl.className = len > 900
+        ? 'text-xs text-red-400'
+        : len > 700
+            ? 'text-xs text-yellow-500'
+            : 'text-xs text-gray-600';
+});
 
 /* =========================
    HARD GAME DETECT
 ========================= */
-function isHardGame(name) {
-    const hardGames = [
-        "free fire", "ff",
-        "pubg", "pubg mobile",
-        "cod mobile",
-        "ml", "mobile legends"
-    ];
+const hardGames = [
+    "free fire", "ff", "pubg", "pubg mobile",
+    "cod mobile", "call of duty", "ml", "mobile legends",
+    "clash of clans", "coc", "clash royale", "brawl stars"
+];
 
-    return hardGames.some(game =>
-        name.toLowerCase().includes(game)
-    );
+function isHardGame(name) {
+    const lower = name.toLowerCase();
+    return hardGames.some(g => lower.includes(g));
 }
 
 /* =========================
    WARNING MODAL
 ========================= */
-confirmWarning.onclick = () => {
+confirmWarning.addEventListener('click', () => {
+    if (!pendingSubmit) return;
     warningModal.classList.add('hidden');
+    const data = pendingSubmit;
+    pendingSubmit = null;
+    sendRequest(data);
+});
 
-    if (pendingSubmit) {
-        sendRequest(pendingSubmit);
-        pendingSubmit = null;
-    }
-};
-
-cancelWarning.onclick = () => {
+cancelWarning.addEventListener('click', () => {
     warningModal.classList.add('hidden');
     pendingSubmit = null;
-};
+    setButtonIdle();
+});
 
 /* =========================
-   COOLDOWN SYSTEM (PERSIST)
+   COOLDOWN (PERSIST)
 ========================= */
 const COOLDOWN_TIME = 30;
 
 function getRemainingCooldown() {
     const last = localStorage.getItem("lastSubmit");
     if (!last) return 0;
-
     const diff = Math.floor((Date.now() - Number(last)) / 1000);
     return diff < COOLDOWN_TIME ? COOLDOWN_TIME - diff : 0;
 }
 
 function startCooldown() {
-    localStorage.setItem("lastSubmit", Date.now());
+    localStorage.setItem("lastSubmit", Date.now().toString());
+    runCooldownTimer(COOLDOWN_TIME);
+}
 
-    let remaining = COOLDOWN_TIME;
+function runCooldownTimer(start) {
+    let remaining = start;
     btn.disabled = true;
-    spinner.classList.add('hidden');
-
     const interval = setInterval(() => {
         remaining--;
         btnText.innerText = `Tunggu ${remaining}s`;
-
         if (remaining <= 0) {
             clearInterval(interval);
-            btn.disabled = false;
-            btnText.innerText = "Kirim Request";
+            setButtonIdle();
         }
     }, 1000);
 }
@@ -278,106 +416,71 @@ function startCooldown() {
 function getFingerprint() {
     return btoa(
         navigator.userAgent +
-        screen.width +
-        screen.height +
+        screen.width + screen.height +
         Intl.DateTimeFormat().resolvedOptions().timeZone
     );
 }
 
 /* =========================
-   SOUND SYSTEM
+   BUTTON STATE HELPERS
 ========================= */
-let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
-
-function updateSoundUI() {
-    soundToggle.innerText = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+function setButtonLoading() {
+    btn.disabled = true;
+    btn.classList.add('opacity-70');
+    spinner.classList.remove('hidden');
+    btnText.innerText = "Mengirim...";
 }
-updateSoundUI();
 
-soundToggle.onclick = () => {
-    soundEnabled = !soundEnabled;
-    localStorage.setItem("soundEnabled", soundEnabled);
-    updateSoundUI();
-};
-
-function playSound(audio) {
-    if (!soundEnabled) return;
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
+function setButtonIdle() {
+    btn.disabled = false;
+    btn.classList.remove('opacity-70');
+    spinner.classList.add('hidden');
+    btnText.innerText = "Kirim Request";
 }
 
 /* =========================
-   STOP SOUND (BACKGROUND FIX)
+   STATUS HELPER (anti-XSS)
 ========================= */
-document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-        [clickSound, successSound, errorSound].forEach(a => {
-            a.pause();
-            a.currentTime = 0;
-        });
-    }
-});
-
-/* =========================
-   VALIDASI CONTACT
-========================= */
-function isValidContact(input) {
-    if (!input) return true;
-    if (input.startsWith('@') && input.length >= 5) return true;
-    if (/^(08|\+628)\d{7,13}$/.test(input)) return true;
-    return false;
+function setStatus(text, colorClass) {
+    statusEl.innerHTML = '';
+    const span = document.createElement('span');
+    span.className = colorClass;
+    span.textContent = text;
+    statusEl.appendChild(span);
 }
-
-/* =========================
-   GLOBAL CLICK SOUND
-========================= */
-document.addEventListener("click", (e) => {
-    if (e.target.closest("button")) {
-        playSound(clickSound);
-    }
-});
 
 /* =========================
    INIT (LOAD)
 ========================= */
-window.addEventListener("load", () => {
-    // restore cooldown
+window.addEventListener("load", async () => {
+    // Load semua sound sebagai blob (URL tidak exposed)
+    sounds.click   = await loadSoundAsBlob('/sounds/mouse-click.mp3');
+    sounds.success = await loadSoundAsBlob('/sounds/Successfully.m4a');
+    sounds.error   = await loadSoundAsBlob('/sounds/error-beep.mp3');
+
+    // Restore cooldown jika masih aktif
     const remaining = getRemainingCooldown();
     if (remaining > 0) {
-        let timeLeft = remaining;
-        btn.disabled = true;
-
-        const interval = setInterval(() => {
-            timeLeft--;
-            btnText.innerText = `Tunggu ${timeLeft}s`;
-
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                btn.disabled = false;
-                btnText.innerText = "Kirim Request";
-            }
-        }, 1000);
+        btnText.innerText = `Tunggu ${remaining}s`;
+        runCooldownTimer(remaining);
     }
 
-    // welcome modal
-    const hide = localStorage.getItem("hideWelcome");
-    if (hide !== "true") {
+    // Welcome modal
+    if (localStorage.getItem("hideWelcome") !== "true") {
         setTimeout(() => modal.classList.remove('hidden'), 300);
     }
 });
 
 /* =========================
-   CLOSE WELCOME
+   CLOSE WELCOME MODAL
 ========================= */
-closeModal.onclick = () => {
+closeModalBtn.addEventListener('click', () => {
     modal.classList.add('hidden');
-
     if (dontShow.checked) {
         localStorage.setItem("hideWelcome", "true");
     }
-
-    playSound(clickSound);
-};
+    // Note: click sound sudah dihandle oleh global click listener
+});
 
 /* =========================
    SUBMIT FORM
@@ -386,47 +489,62 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     if (isSubmitting) return;
-
-    // cegah double modal
     if (!warningModal.classList.contains('hidden')) return;
 
-    let name = document.getElementById('name').value.trim();
-    const modName = document.getElementById('modName').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const contact = document.getElementById('contact').value.trim();
+    let name        = document.getElementById('name').value.trim();
+    const modName   = document.getElementById('modName').value.trim();
+    const description = descInput.value.trim();
+    const contact   = contactInput.value.trim();
+
+    // Validasi panjang minimal
+    if (modName.length < 2) {
+        setStatus('❌ Nama game terlalu pendek (min 2 karakter)', 'text-red-400');
+        playSound(sounds.error);
+        return;
+    }
+
+    if (description.length < 5) {
+        setStatus('❌ Deskripsi terlalu pendek (min 5 karakter)', 'text-red-400');
+        playSound(sounds.error);
+        return;
+    }
+
+    // Validasi contact
+    if (contact && !isValidContact(contact)) {
+        const msg = '❌ ' + getContactError(contact);
+        setStatus(msg, 'text-red-400');
+        playSound(sounds.error);
+        contactInput.classList.add('input-error');
+        contactInput.focus();
+        return;
+    }
 
     if (!name) name = "Anonymous";
 
-    if (!isValidContact(contact)) {
-        status.innerHTML = "<span class='text-red-400'>❌ Format kontak tidak valid</span>";
-        playSound(errorSound);
-        return;
-    }
+    const payload = { name, modName, description, contact };
 
-    // 🔥 Hard game check
+    // Hard game check
     if (isHardGame(modName)) {
         warningModal.classList.remove('hidden');
-        pendingSubmit = { name, modName, description, contact };
-        playSound(errorSound);
+        pendingSubmit = payload;
+        playSound(sounds.error);
         return;
     }
 
-    sendRequest({ name, modName, description, contact });
+    sendRequest(payload);
 });
 
 /* =========================
    SEND REQUEST
 ========================= */
 async function sendRequest(data) {
+    if (isSubmitting) return; // double guard
+
     isSubmitting = true;
-    btn.disabled = true;
-    btn.classList.add('opacity-70');
-    spinner.classList.remove('hidden');
-    btnText.innerText = "Mengirim...";
+    setButtonLoading();
+    setStatus('⏳ Mengirim request...', 'text-blue-400 animate-pulse');
 
     try {
-        status.innerHTML = "<span class='text-blue-400 animate-pulse'>⏳ Mengirim request...</span>";
-
         const res = await fetch('/api/telegram', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -443,29 +561,37 @@ async function sendRequest(data) {
             throw new Error(result.error || "Server error");
         }
 
-        playSound(successSound);
-        status.innerHTML = "<span class='text-green-400 text-lg'>✅ Request berhasil dikirim!</span>";
+        playSound(sounds.success);
+        setStatus('✅ Request berhasil dikirim!', 'text-green-400 text-lg');
         form.reset();
+
+        // Reset contact UI state
+        contactInput.classList.remove('input-error', 'input-ok');
+        contactIcon.classList.add('hidden');
+        contactError.classList.add('hidden');
+        contactHint.classList.remove('show');
+        charCountEl.textContent = '0 / 1000';
 
         startCooldown();
 
     } catch (err) {
-        status.innerHTML = `<span class='text-red-400'>❌ ${err.message}</span>`;
-        playSound(errorSound);
+        // Sanitasi pesan error — tidak pakai innerHTML
+        setStatus(`❌ ${err.message}`, 'text-red-400');
+        playSound(sounds.error);
+        setButtonIdle();
+
     } finally {
         isSubmitting = false;
+        spinner.classList.add('hidden'); // selalu hide spinner
+        btn.classList.remove('opacity-70');
 
-        const remaining = getRemainingCooldown();
-
-        if (remaining <= 0) {
-            btn.disabled = false;
-            btn.classList.remove('opacity-70');
-            spinner.classList.add('hidden');
-            btnText.innerText = "Kirim Request";
+        // Jika tidak ada cooldown aktif, re-enable button
+        if (getRemainingCooldown() <= 0 && !btn.disabled) {
+            setButtonIdle();
         }
     }
 }
 </script>
 
-</body>  
-</html> 
+</body>
+</html>
