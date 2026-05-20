@@ -331,15 +331,15 @@ contactInput.addEventListener('input', () => {
     if (!val) return;
 
     if (isValidContact(val)) {
-        contactInput.classList.add('input-ok');
-        contactIcon.textContent = '✅';
-        contactIcon.classList.remove('hidden');
-    } else {
-        contactInput.classList.add('input-error');
-        contactIcon.textContent = '❌';
-        contactIcon.classList.remove('hidden');
-        contactError.textContent = getContactError(val);
-        contactError.classList.remove('hidden');
+    contactInput.classList.add('input-ok');
+    contactIcon.textContent = '✓';
+    contactIcon.className = 'absolute right-3.5 top-1/2 -translate-y-1/2 text-base font-bold text-green-400';
+} else {
+    contactInput.classList.add('input-error');
+    contactIcon.textContent = '!';
+    contactIcon.className = 'absolute right-3.5 top-1/2 -translate-y-1/2 text-base font-bold text-red-400';
+    contactError.textContent = getContactError(val);
+    contactError.classList.remove('hidden');
     }
 });
 
