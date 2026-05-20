@@ -29,21 +29,16 @@
             accent-color: #3b82f6;
         }
         .contact-hint {
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 0;
-            right: 0;
-            z-index: 10;
+            position: relative;
+            z-index: 20;
             transition: all 0.2s ease;
             max-height: 0;
             overflow: hidden;
             opacity: 0;
-            pointer-events: none;
         }
         .contact-hint.show {
             max-height: 90px;
             opacity: 1;
-            pointer-events: auto;
         }
         .input-error {
             border-color: rgba(239,68,68,0.6) !important;
@@ -109,13 +104,11 @@
                        placeholder="@username_telegram / 08xxxxxxxxxx"
                        autocomplete="off" spellcheck="false">
                 <span id="contactIcon" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-lg hidden"></span>
-
-                <!-- Hint box — absolute di ATAS input, tidak ketutup keyboard -->
-                <div id="contactHint" class="contact-hint p-2.5 rounded-xl bg-gray-900 border border-gray-700/60 text-xs text-gray-400 space-y-1 shadow-xl">
-                    <p>✓ Telegram: <span class="text-blue-400">@username</span> (5–32 karakter, huruf/angka/_)</p>
-                    <p>✓ WhatsApp: <span class="text-green-400">08xxxxxxxxxx</span> atau <span class="text-green-400">+628xxxxxxxxx</span></p>
-                    <p>✓ WA Link: <span class="text-green-400">https://wa.me/628xxxxxxxxx</span></p>
-                </div>
+            </div>
+             <div id="contactHint" class="contact-hint mt-2 p-2.5 rounded-xl bg-gray-800/30 border border-gray-700/30 text-xs text-gray-500 space-y-1">
+                <p>✓ Telegram: <span class="text-blue-400">@username</span> (5–32 karakter, huruf/angka/_)</p>
+                <p>✓ WhatsApp: <span class="text-green-400">08xxxxxxxxxx</span> atau <span class="text-green-400">+628xxxxxxxxx</span></p>
+                <p>✓ WA Link: <span class="text-green-400">https://wa.me/628xxxxxxxxx</span></p>
             </div>
             <p id="contactError" class="text-xs text-red-400 ml-1 mt-1 hidden truncate"></p>
         </div>
