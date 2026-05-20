@@ -106,8 +106,9 @@
 
             <!-- Hint box — muncul saat user mulai ketik -->
             <div id="contactHint" class="contact-hint mt-2 p-2.5 rounded-xl bg-gray-800/30 border border-gray-700/30 text-xs text-gray-500 space-y-1">
-                <p>✓ Telegram: <span class="text-blue-400">@username</span> (5–32 karakter, huruf/angka/_)</p>
-                <p>✓ WhatsApp: <span class="text-green-400">08xxxxxxxxxx</span> atau <span class="text-green-400">+628xxxxxxxxx</span></p>
+               <p>✓ Telegram: <span class="text-blue-400">@username</span> (5–32 karakter, huruf/angka/_)</p>
+               <p>✓ WhatsApp: <span class="text-green-400">08xxxxxxxxxx</span> atau <span class="text-green-400">+628xxxxxxxxx</span></p>
+               <p>✓ WA Link: <span class="text-green-400">https://wa.me/628xxxxxxxxx</span></p>
             </div>
             <p id="contactError" class="text-xs text-red-400 ml-1 mt-1 hidden"></p>
         </div>
@@ -291,19 +292,29 @@ function classifyContact(val) {
 
 function isValidContact(val) {
     if (!val) return true;
-    return telegramRegex.test(val) || waRegex.test(val);
-}
 
+    const telegramRegex = /^@[a-zA-Z][a-zA-Z0-9_]{4,31}(?<!_)$/;
+    const waRegex = /^(08|\+628)\d{8,13}$/;
+    // ✅ Tambahan — handle format wa.me/628xxx atau wa.me/08xxx
+    const waMeRegex = /^(https?:\/\/)?(wa\.me)\/(628|08)\d{8,13}$/;
+
+    if (telegramRegex.test(val)) return true;
+    if (waRegex.test(val)) return true;
+    if (waMeRegex.test(val)) return true;
+
+    return false;
+}
+    
 function getContactError(val) {
     const type = classifyContact(val);
     if (type === 'telegram') {
         return "Username Telegram tidak valid. Contoh: @ashermod (min 5 karakter, hanya huruf/angka/_)";
     }
     if (type === 'phone') {
-        return "Nomor WA tidak valid. Contoh: 08123456789 atau +6281234567890";
+        return "Nomor WA tidak valid. Contoh: 08123456789 atau https://wa.me/6281234567890";
     }
-    return "Format tidak dikenali. Gunakan @username Telegram atau nomor WA";
-}
+    return "Format tidak dikenali. Gunakan @username Telegram, nomor WA, atau link wa.me";
+    }
 
 // Live validation saat user ketik
 contactInput.addEventListener('input', () => {
@@ -353,9 +364,33 @@ descInput.addEventListener('input', () => {
    HARD GAME DETECT
 ========================= */
 const hardGames = [
-    "free fire", "ff", "pubg", "pubg mobile",
-    "cod mobile", "call of duty", "ml", "mobile legends",
-    "clash of clans", "coc", "clash royale", "brawl stars"
+    // Free Fire family
+    "free fire", "ff", "freefire", "free-fire",
+    "ff beta", "free fire beta",
+    "ff kipas", "free fire kipas",
+    "ff max", "free fire max", "freefire max",
+
+    // PUBG & COD
+    "pubg", "pubg mobile",
+    "cod mobile", "call of duty",
+
+    // Mobile Legends & Clash family
+    "ml", "mobile legends",
+    "clash of clans", "coc", "clash royale", "brawl stars",
+
+    // Magic Chess
+    "magic chess", "magic cess", "magic chess go go", "magic cess go go",
+
+    // UNO
+    "uno",
+
+    // FC Mobile
+    "fc mobile", "fifa mobile", "ea fc mobile",
+
+    // Dream League Soccer
+    "dls", "dls26", "dls 26",
+    "dream league soccer", "dream league soccer 2026",
+    "dream league"
 ];
 
 function isHardGame(name) {
